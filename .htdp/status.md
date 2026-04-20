@@ -1,8 +1,8 @@
 # Status
 
 phase: 2
-layer: 3
-updated: 2026-04-20T20:58:25.587Z
+layer: 2
+updated: 2026-04-20T21:01:27.873Z
 
 ## Wishes
 
@@ -15,7 +15,7 @@ updated: 2026-04-20T20:58:25.587Z
 | renderSingleCaseStylesheet | src/rendering/case-page.ts | 3 | pass | 167.1s |
 | loadCaseManifestFromFile | src/app/build-single-case-static-app.ts | 3 | pass | 242.1s |
 | writeStaticAssets | src/app/build-single-case-static-app.ts | 3 | pass | 184.7s |
-| renderGenomicSnapshotSection | src/rendering/case-page.ts | 2 | pending | - |
+| renderGenomicSnapshotSection | src/rendering/case-page.ts | 2 | pass | 170.3s |
 | renderCasePage | src/rendering/case-page.ts | 1 | pending | - |
 | buildSingleCaseStaticApp | src/app/build-single-case-static-app.ts | 1 | pending | - |
 | main | src/app/build-single-case-static-app.ts | 0 | pending | - |
@@ -45,3 +45,7 @@ updated: 2026-04-20T20:58:25.587Z
 - 16:58:12 implementer_post verification for loadCaseManifestFromFile: pass
 - 16:58:25 renderCaseMetadataSection: pass (256.1s, $0.4125)
 - 16:58:25 implementer_post verification for renderCaseMetadataSection: pass
+- 16:58:36 renderGenomicSnapshotSection: running
+- 17:01:27 renderGenomicSnapshotSection: pass (170.3s, $0.3919)
+- 17:01:27 implementer_post verification for renderGenomicSnapshotSection: pass
+- 17:01:27 layer 2 verification: pass

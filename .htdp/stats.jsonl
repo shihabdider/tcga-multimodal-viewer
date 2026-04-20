@@ -17,3 +17,4 @@
 {"ts":"2026-04-20T20:58:11.457Z","agent":"implementer","wish":"renderMutationHighlightsSection","layer":3,"status":"pass","turns":29,"input":60682,"output":8355,"cacheRead":785408,"cost":0.4734,"duration":241.8}
 {"ts":"2026-04-20T20:58:12.597Z","agent":"implementer","wish":"loadCaseManifestFromFile","layer":3,"status":"pass","turns":21,"input":70277,"output":9441,"cacheRead":473344,"cost":0.4356,"duration":242.1}
 {"ts":"2026-04-20T20:58:25.587Z","agent":"implementer","wish":"renderCaseMetadataSection","layer":3,"status":"pass","turns":23,"input":34847,"output":10709,"cacheRead":659072,"cost":0.4125,"duration":256.1}
+{"ts":"2026-04-20T21:01:27.873Z","agent":"implementer","wish":"renderGenomicSnapshotSection","layer":2,"status":"pass","turns":20,"input":70021,"output":6398,"cacheRead":483584,"cost":0.3919,"duration":170.3}

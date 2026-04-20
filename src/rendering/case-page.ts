@@ -54,7 +54,25 @@ export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
 }
 
 export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string {
-  throw new Error("not implemented: renderGenomicSnapshotSection");
+  const mutationHighlightsSection = renderMutationHighlightsSection(
+    snapshot.mutationHighlights,
+  );
+  const expressionHighlightsSection = renderExpressionHighlightsSection(
+    snapshot.expressionMetric,
+    snapshot.expressionHighlights,
+  );
+  const copyNumberHighlightsSection = renderCopyNumberHighlightsSection(
+    snapshot.copyNumberHighlights,
+  );
+
+  return [
+    '<section class="genomic-snapshot" aria-labelledby="genomic-snapshot-heading">',
+    '  <h2 id="genomic-snapshot-heading">Genomic snapshot</h2>',
+    mutationHighlightsSection,
+    expressionHighlightsSection,
+    copyNumberHighlightsSection,
+    "</section>",
+  ].join("\n");
 }
 
 export function renderMutationHighlightsSection(
