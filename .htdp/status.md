@@ -1,56 +1,26 @@
 # Status
 
-phase: 2
-layer: 0
-updated: 2026-04-20T20:22:26.844Z
+phase: 1
+layer: -
+updated: 2026-04-20T20:53:29.011Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
-| validateSourceFileReference | src/contracts/case-manifest.validation.ts | 2 | pass | 284.0s |
-| validateCaseMetadata | src/contracts/case-manifest.validation.ts | 2 | pass | 67.0s |
-| validateMutationHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 319.4s |
-| validateExpressionHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 72.5s |
-| validateCopyNumberHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 350.8s |
-| validateSlideReference | src/contracts/case-manifest.validation.ts | 2 | pass | 275.4s |
-| validateGenomicSnapshot | src/contracts/case-manifest.validation.ts | 1 | pass | 220.9s |
-| validateCaseManifest | src/contracts/case-manifest.validation.ts | 0 | pass | 220.2s |
+| renderCaseMetadataSection | src/rendering/case-page.ts | 3 | pending | - |
+| renderMutationHighlightsSection | src/rendering/case-page.ts | 3 | pending | - |
+| renderExpressionHighlightsSection | src/rendering/case-page.ts | 3 | pending | - |
+| renderCopyNumberHighlightsSection | src/rendering/case-page.ts | 3 | pending | - |
+| renderSingleCaseStylesheet | src/rendering/case-page.ts | 3 | pending | - |
+| loadCaseManifestFromFile | src/app/build-single-case-static-app.ts | 3 | pending | - |
+| writeStaticAssets | src/app/build-single-case-static-app.ts | 3 | pending | - |
+| renderGenomicSnapshotSection | src/rendering/case-page.ts | 2 | pending | - |
+| renderCasePage | src/rendering/case-page.ts | 1 | pending | - |
+| buildSingleCaseStaticApp | src/app/build-single-case-static-app.ts | 1 | pending | - |
+| main | src/app/build-single-case-static-app.ts | 0 | pending | - |
 
 ## Log
 
-- 16:05:25 stubber complete, 8 wishes, 3 layers
-- 16:05:25 stubber_post verification: pass
-- 16:05:59 validateSourceFileReference: running
-- 16:05:59 validateCaseMetadata: running
-- 16:05:59 validateMutationHighlight: running
-- 16:06:00 validateExpressionHighlight: running
-- 16:06:00 validateCopyNumberHighlight: running
-- 16:06:00 validateSlideReference: running
-- 16:09:42 validateExpressionHighlight: pass (222.6s, $0.3453)
-- 16:09:42 implementer_post verification for validateExpressionHighlight: fail
-- 16:09:49 validateCaseMetadata: pass (229.5s, $0.3773)
-- 16:09:49 implementer_post verification for validateCaseMetadata: fail
-- 16:10:35 validateSlideReference: pass (275.4s, $0.4384)
-- 16:10:36 implementer_post verification for validateSlideReference: pass
-- 16:10:43 validateSourceFileReference: pass (284.0s, $0.4212)
-- 16:10:43 implementer_post verification for validateSourceFileReference: pass
-- 16:11:19 validateMutationHighlight: pass (319.4s, $0.4685)
-- 16:11:19 implementer_post verification for validateMutationHighlight: pass
-- 16:11:51 validateCopyNumberHighlight: pass (350.8s, $0.5542)
-- 16:11:51 implementer_post verification for validateCopyNumberHighlight: pass
-- 16:12:12 validateCaseMetadata: running
-- 16:13:19 validateCaseMetadata: pass (67.0s, $0.0796)
-- 16:13:19 implementer_post verification for validateCaseMetadata: pass
-- 16:13:25 validateExpressionHighlight: running
-- 16:14:38 validateExpressionHighlight: pass (72.5s, $0.1163)
-- 16:14:38 implementer_post verification for validateExpressionHighlight: pass
-- 16:14:38 layer 2 verification: pass
-- 16:14:53 validateGenomicSnapshot: running
-- 16:18:34 validateGenomicSnapshot: pass (220.9s, $0.3113)
-- 16:18:34 implementer_post verification for validateGenomicSnapshot: pass
-- 16:18:34 layer 1 verification: pass
-- 16:18:46 validateCaseManifest: running
-- 16:22:26 validateCaseManifest: pass (220.2s, $0.3488)
-- 16:22:26 implementer_post verification for validateCaseManifest: pass
-- 16:22:26 layer 0 verification: pass
+- 16:53:29 stubber complete, 11 wishes, 4 layers
+- 16:53:29 stubber_post verification: pass
