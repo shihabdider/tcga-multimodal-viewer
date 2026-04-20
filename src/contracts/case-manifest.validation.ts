@@ -209,7 +209,66 @@ export function validateCopyNumberHighlight(value: unknown): CopyNumberHighlight
 }
 
 export function validateGenomicSnapshot(value: unknown): GenomicSnapshot {
-  throw new Error("not implemented: validateGenomicSnapshot");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("GenomicSnapshot must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const sourceFiles = candidate.sourceFiles;
+
+  if (
+    typeof sourceFiles !== "object" ||
+    sourceFiles === null ||
+    Array.isArray(sourceFiles)
+  ) {
+    throw new Error("GenomicSnapshot.sourceFiles must be an object");
+  }
+
+  const mutationHighlights = candidate.mutationHighlights;
+  if (!Array.isArray(mutationHighlights)) {
+    throw new Error("GenomicSnapshot.mutationHighlights must be an array");
+  }
+
+  const expressionMetric = candidate.expressionMetric;
+  if (expressionMetric !== "tpm_unstranded") {
+    throw new Error(
+      'GenomicSnapshot.expressionMetric must be "tpm_unstranded"',
+    );
+  }
+
+  const expressionHighlights = candidate.expressionHighlights;
+  if (!Array.isArray(expressionHighlights)) {
+    throw new Error("GenomicSnapshot.expressionHighlights must be an array");
+  }
+
+  const copyNumberHighlights = candidate.copyNumberHighlights;
+  if (!Array.isArray(copyNumberHighlights)) {
+    throw new Error("GenomicSnapshot.copyNumberHighlights must be an array");
+  }
+
+  const sourceFileRecord = sourceFiles as Record<string, unknown>;
+
+  return {
+    sourceFiles: {
+      maskedSomaticMutation: validateSourceFileReference(
+        sourceFileRecord.maskedSomaticMutation,
+      ),
+      geneExpression: validateSourceFileReference(sourceFileRecord.geneExpression),
+      geneLevelCopyNumber: validateSourceFileReference(
+        sourceFileRecord.geneLevelCopyNumber,
+      ),
+    },
+    mutationHighlights: mutationHighlights.map((highlight) =>
+      validateMutationHighlight(highlight),
+    ),
+    expressionMetric,
+    expressionHighlights: expressionHighlights.map((highlight) =>
+      validateExpressionHighlight(highlight),
+    ),
+    copyNumberHighlights: copyNumberHighlights.map((highlight) =>
+      validateCopyNumberHighlight(highlight),
+    ),
+  };
 }
 
 export function validateSlideReference(value: unknown): SlideReference {
