@@ -25,3 +25,7 @@
 
 ## Checkpoint preference
 When finishing a task or hitting a real decision point, keep checkpoints concise and mention what was actually verified.
+
+## HtDP workflow
+- htdp.mode: autonomous
+- htdp.transparent: true
