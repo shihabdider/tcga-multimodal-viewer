@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 1
-updated: 2026-04-20T21:04:33.582Z
+updated: 2026-04-20T21:06:54.957Z
 
 ## Wishes
 
@@ -17,7 +17,7 @@ updated: 2026-04-20T21:04:33.582Z
 | writeStaticAssets | src/app/build-single-case-static-app.ts | 3 | pass | 184.7s |
 | renderGenomicSnapshotSection | src/rendering/case-page.ts | 2 | pass | 170.3s |
 | renderCasePage | src/rendering/case-page.ts | 1 | pass | 178.7s |
-| buildSingleCaseStaticApp | src/app/build-single-case-static-app.ts | 1 | pending | - |
+| buildSingleCaseStaticApp | src/app/build-single-case-static-app.ts | 1 | pass | 136.5s |
 | main | src/app/build-single-case-static-app.ts | 0 | pending | - |
 
 ## Log
@@ -52,3 +52,7 @@ updated: 2026-04-20T21:04:33.582Z
 - 17:01:34 renderCasePage: running
 - 17:04:33 renderCasePage: pass (178.7s, $0.3227)
 - 17:04:33 implementer_post verification for renderCasePage: pass
+- 17:04:37 buildSingleCaseStaticApp: running
+- 17:06:54 buildSingleCaseStaticApp: pass (136.5s, $0.2372)
+- 17:06:54 implementer_post verification for buildSingleCaseStaticApp: pass
+- 17:06:54 layer 1 verification: pass

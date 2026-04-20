@@ -3,6 +3,10 @@ import { dirname, join } from "node:path";
 
 import type { CaseId, CaseManifest } from "../contracts/case-manifest";
 import { validateCaseManifest } from "../contracts/case-manifest.validation";
+import {
+  renderCasePage,
+  renderSingleCaseStylesheet,
+} from "../rendering/case-page";
 
 export const DEFAULT_SEED_MANIFEST_PATH =
   "manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
@@ -51,7 +55,27 @@ export async function writeStaticAssets(
 export async function buildSingleCaseStaticApp(
   paths: SingleCaseBuildPaths,
 ): Promise<SingleCaseStaticBuild> {
-  throw new Error("not implemented: buildSingleCaseStaticApp");
+  const manifest = await loadCaseManifestFromFile(paths.manifestPath);
+  const assets: StaticAsset[] = [
+    {
+      outputPath: "index.html",
+      contentType: "text/html",
+      content: renderCasePage(manifest),
+    },
+    {
+      outputPath: "styles.css",
+      contentType: "text/css",
+      content: renderSingleCaseStylesheet(),
+    },
+  ];
+
+  await writeStaticAssets(paths.outputDirectory, assets);
+
+  return {
+    caseId: manifest.case.caseId,
+    outputDirectory: paths.outputDirectory,
+    assets,
+  };
 }
 
 export async function main(

@@ -1,17 +1,33 @@
 import { describe, expect, test } from "bun:test";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import manifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
 import type { ExpressionHighlight } from "../src/contracts/case-manifest";
 import {
   buildSingleCaseStaticApp,
-  DEFAULT_OUTPUT_DIRECTORY,
   DEFAULT_SEED_MANIFEST_PATH,
 } from "../src/app/build-single-case-static-app";
 import {
   renderCasePage,
   renderExpressionHighlightsSection,
   renderGenomicSnapshotSection,
+  renderSingleCaseStylesheet,
 } from "../src/rendering/case-page";
+
+async function withTempBuildDirectory(
+  run: (outputDirectory: string) => Promise<void>,
+): Promise<void> {
+  const tempDirectory = await mkdtemp(join(tmpdir(), "single-case-static-app-"));
+  const outputDirectory = join(tempDirectory, "dist", "tcga-e9-a5fl");
+
+  try {
+    await run(outputDirectory);
+  } finally {
+    await rm(tempDirectory, { recursive: true, force: true });
+  }
+}
 
 describe("single-case static app rendering", () => {
   test.skip("renderCasePage surfaces manifest-driven case metadata and genomic values", () => {
@@ -98,23 +114,43 @@ describe("renderExpressionHighlightsSection", () => {
 });
 
 describe("buildSingleCaseStaticApp", () => {
-  test.skip("loads the checked-in manifest and emits index.html plus a minimal companion asset", async () => {
-    const build = await buildSingleCaseStaticApp({
-      manifestPath: DEFAULT_SEED_MANIFEST_PATH,
-      outputDirectory: DEFAULT_OUTPUT_DIRECTORY,
-    });
+  test("loads the checked-in manifest and returns the rendered html plus stylesheet assets", async () => {
+    await withTempBuildDirectory(async (outputDirectory) => {
+      const build = await buildSingleCaseStaticApp({
+        manifestPath: DEFAULT_SEED_MANIFEST_PATH,
+        outputDirectory,
+      });
 
-    expect(build.caseId).toBe(manifest.case.caseId);
-    expect(build.outputDirectory).toBe(DEFAULT_OUTPUT_DIRECTORY);
-    expect(build.assets.map((asset) => asset.outputPath).sort()).toEqual([
-      "index.html",
-      "styles.css",
-    ]);
-    expect(
-      build.assets.find((asset) => asset.outputPath === "index.html")?.content,
-    ).toContain(manifest.case.caseId);
-    expect(
-      build.assets.find((asset) => asset.outputPath === "index.html")?.content,
-    ).toContain(manifest.case.primaryDiagnosis);
+      expect(build.caseId).toBe(manifest.case.caseId);
+      expect(build.outputDirectory).toBe(outputDirectory);
+      expect(build.assets).toEqual([
+        {
+          outputPath: "index.html",
+          contentType: "text/html",
+          content: renderCasePage(manifest),
+        },
+        {
+          outputPath: "styles.css",
+          contentType: "text/css",
+          content: renderSingleCaseStylesheet(),
+        },
+      ]);
+    });
+  });
+
+  test("writes the emitted assets into the requested output directory", async () => {
+    await withTempBuildDirectory(async (outputDirectory) => {
+      const build = await buildSingleCaseStaticApp({
+        manifestPath: DEFAULT_SEED_MANIFEST_PATH,
+        outputDirectory,
+      });
+
+      expect(await readFile(join(outputDirectory, "index.html"), "utf8")).toBe(
+        build.assets[0]?.content,
+      );
+      expect(await readFile(join(outputDirectory, "styles.css"), "utf8")).toBe(
+        build.assets[1]?.content,
+      );
+    });
   });
 });
