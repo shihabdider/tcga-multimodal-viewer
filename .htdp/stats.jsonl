@@ -1,1 +1,4 @@
 {"ts":"2026-04-20T20:05:25.018Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":33,"input":56176,"output":32687,"cacheRead":1537920,"cost":1.0152,"duration":715.3}
+{"ts":"2026-04-20T20:09:42.897Z","agent":"implementer","wish":"validateExpressionHighlight","layer":2,"status":"fail","turns":22,"input":46206,"output":9118,"cacheRead":371968,"cost":0.3453,"duration":222.6}
+{"ts":"2026-04-20T20:09:49.487Z","agent":"implementer","wish":"validateCaseMetadata","layer":2,"status":"fail","turns":21,"input":56447,"output":9057,"cacheRead":401280,"cost":0.3773,"duration":229.5}
+{"ts":"2026-04-20T20:10:36.079Z","agent":"implementer","wish":"validateSlideReference","layer":2,"status":"pass","turns":29,"input":39632,"output":10562,"cacheRead":723712,"cost":0.4384,"duration":275.4}

@@ -1,19 +1,19 @@
 # Status
 
-phase: 1
-layer: -
-updated: 2026-04-20T20:05:25.017Z
+phase: 2
+layer: 2
+updated: 2026-04-20T20:10:36.079Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
-| validateSourceFileReference | src/contracts/case-manifest.validation.ts | 2 | pending | - |
-| validateCaseMetadata | src/contracts/case-manifest.validation.ts | 2 | pending | - |
-| validateMutationHighlight | src/contracts/case-manifest.validation.ts | 2 | pending | - |
-| validateExpressionHighlight | src/contracts/case-manifest.validation.ts | 2 | pending | - |
-| validateCopyNumberHighlight | src/contracts/case-manifest.validation.ts | 2 | pending | - |
-| validateSlideReference | src/contracts/case-manifest.validation.ts | 2 | pending | - |
+| validateSourceFileReference | src/contracts/case-manifest.validation.ts | 2 | running | - |
+| validateCaseMetadata | src/contracts/case-manifest.validation.ts | 2 | fail | 229.5s |
+| validateMutationHighlight | src/contracts/case-manifest.validation.ts | 2 | running | - |
+| validateExpressionHighlight | src/contracts/case-manifest.validation.ts | 2 | fail | 222.6s |
+| validateCopyNumberHighlight | src/contracts/case-manifest.validation.ts | 2 | running | - |
+| validateSlideReference | src/contracts/case-manifest.validation.ts | 2 | pass | 275.4s |
 | validateGenomicSnapshot | src/contracts/case-manifest.validation.ts | 1 | pending | - |
 | validateCaseManifest | src/contracts/case-manifest.validation.ts | 0 | pending | - |
 
@@ -21,3 +21,15 @@ updated: 2026-04-20T20:05:25.017Z
 
 - 16:05:25 stubber complete, 8 wishes, 3 layers
 - 16:05:25 stubber_post verification: pass
+- 16:05:59 validateSourceFileReference: running
+- 16:05:59 validateCaseMetadata: running
+- 16:05:59 validateMutationHighlight: running
+- 16:06:00 validateExpressionHighlight: running
+- 16:06:00 validateCopyNumberHighlight: running
+- 16:06:00 validateSlideReference: running
+- 16:09:42 validateExpressionHighlight: pass (222.6s, $0.3453)
+- 16:09:42 implementer_post verification for validateExpressionHighlight: fail
+- 16:09:49 validateCaseMetadata: pass (229.5s, $0.3773)
+- 16:09:49 implementer_post verification for validateCaseMetadata: fail
+- 16:10:35 validateSlideReference: pass (275.4s, $0.4384)
+- 16:10:36 implementer_post verification for validateSlideReference: pass
