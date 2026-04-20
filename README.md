@@ -19,3 +19,21 @@ The current MVP order is:
 1. multimodal smoke test on a tiny BRCA subset
 2. public one-cohort viewer
 3. pathology-derived differentiator layer
+
+## Local build and preview
+
+Build the Iteration 2 single-case static app:
+
+```sh
+bun run src/app/build-single-case-static-app.ts
+```
+
+This writes the default artifact to `dist/tcga-e9-a5fl/`.
+
+Preview it locally with a simple static file server:
+
+```sh
+python3 -m http.server 8000 --directory dist/tcga-e9-a5fl
+```
+
+Then open <http://localhost:8000>.

@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import manifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
 import {
@@ -13,6 +14,10 @@ import {
   renderCasePage,
   renderSingleCaseStylesheet,
 } from "../src/rendering/case-page";
+
+const BUILD_SCRIPT_PATH = fileURLToPath(
+  new URL("../src/app/build-single-case-static-app.ts", import.meta.url),
+);
 
 async function withTempProjectRoot(
   run: (projectRoot: string) => Promise<void>,
@@ -37,6 +42,23 @@ async function withTempProjectRoot(
 async function writeManifestFile(manifestPath: string): Promise<void> {
   await mkdir(dirname(manifestPath), { recursive: true });
   await writeFile(manifestPath, JSON.stringify(manifest), "utf8");
+}
+
+async function runBuildScriptDirectly(
+  projectRoot: string,
+  argv: string[] = [],
+): Promise<{ exitCode: number; stderr: string }> {
+  const subprocess = Bun.spawn([process.execPath, "run", BUILD_SCRIPT_PATH, ...argv], {
+    cwd: projectRoot,
+    stdout: "ignore",
+    stderr: "pipe",
+  });
+  const [exitCode, stderr] = await Promise.all([
+    subprocess.exited,
+    new Response(subprocess.stderr).text(),
+  ]);
+
+  return { exitCode, stderr };
 }
 
 async function expectBuiltAssets(outputDirectory: string): Promise<void> {
@@ -87,6 +109,18 @@ describe("main", () => {
 
       await main([]);
 
+      await expectBuiltAssets(outputDirectory);
+    });
+  });
+
+  test("invokes main when the module is run directly with Bun", async () => {
+    await withTempProjectRoot(async (projectRoot) => {
+      const outputDirectory = join(projectRoot, DEFAULT_OUTPUT_DIRECTORY);
+
+      const { exitCode, stderr } = await runBuildScriptDirectly(projectRoot);
+
+      expect(exitCode).toBe(0);
+      expect(stderr).toBe("");
       await expectBuiltAssets(outputDirectory);
     });
   });

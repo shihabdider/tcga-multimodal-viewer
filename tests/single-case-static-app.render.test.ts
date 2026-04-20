@@ -30,7 +30,7 @@ async function withTempBuildDirectory(
 }
 
 describe("single-case static app rendering", () => {
-  test.skip("renderCasePage surfaces manifest-driven case metadata and genomic values", () => {
+  test("renderCasePage surfaces manifest-driven case metadata and genomic values", () => {
     const rendered = renderCasePage(manifest);
 
     expect(rendered).toContain(manifest.case.caseId);
@@ -47,7 +47,7 @@ describe("single-case static app rendering", () => {
     );
   });
 
-  test.skip("renderGenomicSnapshotSection keeps each bounded highlight collection manifest-driven", () => {
+  test("renderGenomicSnapshotSection keeps each bounded highlight collection manifest-driven", () => {
     const rendered = renderGenomicSnapshotSection(manifest.genomicSnapshot);
 
     expect(rendered).toContain(manifest.genomicSnapshot.expressionMetric);

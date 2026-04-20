@@ -81,10 +81,15 @@ export async function buildSingleCaseStaticApp(
 export async function main(
   argv: string[] = process.argv.slice(2),
 ): Promise<void> {
-  const [manifestPath = DEFAULT_SEED_MANIFEST_PATH, outputDirectory = DEFAULT_OUTPUT_DIRECTORY] = argv;
+  const [manifestPath = DEFAULT_SEED_MANIFEST_PATH, outputDirectory = DEFAULT_OUTPUT_DIRECTORY] =
+    argv;
 
   await buildSingleCaseStaticApp({
     manifestPath,
     outputDirectory,
   });
+}
+
+if (import.meta.main) {
+  await main();
 }
