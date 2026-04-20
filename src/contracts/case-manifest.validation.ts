@@ -179,7 +179,33 @@ export function validateExpressionHighlight(value: unknown): ExpressionHighlight
 }
 
 export function validateCopyNumberHighlight(value: unknown): CopyNumberHighlight {
-  throw new Error("not implemented: validateCopyNumberHighlight");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("CopyNumberHighlight must be an object");
+  }
+
+  const { geneSymbol, copyNumber } = value as {
+    geneSymbol?: unknown;
+    copyNumber?: unknown;
+  };
+
+  if (typeof geneSymbol !== "string" || geneSymbol.trim().length === 0) {
+    throw new Error("CopyNumberHighlight.geneSymbol must be a non-empty string");
+  }
+
+  if (
+    typeof copyNumber !== "number" ||
+    !Number.isFinite(copyNumber) ||
+    copyNumber < 0
+  ) {
+    throw new Error(
+      "CopyNumberHighlight.copyNumber must be a finite non-negative number",
+    );
+  }
+
+  return {
+    geneSymbol,
+    copyNumber,
+  };
 }
 
 export function validateGenomicSnapshot(value: unknown): GenomicSnapshot {
