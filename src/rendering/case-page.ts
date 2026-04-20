@@ -12,7 +12,45 @@ export function renderCasePage(manifest: CaseManifest): string {
 }
 
 export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
-  throw new Error("not implemented: renderCaseMetadataSection");
+  const escapeHtml = (value: string): string =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const summaryFields: Array<{ label: string; value: string }> = [
+    { label: "Case ID", value: caseMetadata.caseId },
+    { label: "GDC Case ID", value: caseMetadata.gdcCaseId },
+    { label: "Project", value: caseMetadata.projectId },
+    { label: "Primary site", value: caseMetadata.primarySite },
+    { label: "Disease type", value: caseMetadata.diseaseType },
+    { label: "Primary diagnosis", value: caseMetadata.primaryDiagnosis },
+    { label: "Gender", value: caseMetadata.gender },
+    { label: "Tumor sample ID", value: caseMetadata.tumorSampleId },
+  ];
+
+  const renderedFields = summaryFields
+    .map(
+      ({ label, value }) =>
+        [
+          '    <div class="case-summary__item">',
+          `      <dt>${label}</dt>`,
+          `      <dd>${escapeHtml(value)}</dd>`,
+          "    </div>",
+        ].join("\n"),
+    )
+    .join("\n");
+
+  return [
+    '<section class="case-summary" aria-labelledby="case-summary-heading">',
+    '  <h2 id="case-summary-heading">Case summary</h2>',
+    '  <dl class="case-summary__list">',
+    renderedFields,
+    "  </dl>",
+    "</section>",
+  ].join("\n");
 }
 
 export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string {
@@ -34,7 +72,7 @@ export function renderMutationHighlightsSection(
     return [
       '<section class="genomic-panel mutation-highlights">',
       "  <h3>Somatic mutation highlights</h3>",
-      "  <p>No somatic mutations highlighted for this case.</p>",
+      '  <p class="empty-state">No somatic mutation highlights available.</p>',
       "</section>",
     ].join("\n");
   }
@@ -56,7 +94,7 @@ export function renderMutationHighlightsSection(
   return [
     '<section class="genomic-panel mutation-highlights">',
     "  <h3>Somatic mutation highlights</h3>",
-    '  <ul class="highlight-list">',
+    '  <ul class="highlight-list mutation-highlight-list">',
     renderedHighlights,
     "  </ul>",
     "</section>",

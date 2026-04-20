@@ -12,3 +12,6 @@
 {"ts":"2026-04-20T20:53:29.011Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":19,"input":38914,"output":24227,"cacheRead":534784,"cost":0.5944,"duration":494.6}
 {"ts":"2026-04-20T20:56:57.448Z","agent":"implementer","wish":"renderSingleCaseStylesheet","layer":3,"status":"pass","turns":18,"input":53454,"output":6929,"cacheRead":333824,"cost":0.321,"duration":167.1}
 {"ts":"2026-04-20T20:57:15.378Z","agent":"implementer","wish":"writeStaticAssets","layer":3,"status":"pass","turns":20,"input":40353,"output":8106,"cacheRead":430720,"cost":0.3302,"duration":184.7}
+{"ts":"2026-04-20T20:57:30.758Z","agent":"implementer","wish":"renderExpressionHighlightsSection","layer":3,"status":"fail","turns":20,"input":43053,"output":8736,"cacheRead":483328,"cost":0.3595,"duration":200.9}
+{"ts":"2026-04-20T20:57:34.691Z","agent":"implementer","wish":"renderCopyNumberHighlightsSection","layer":3,"status":"fail","turns":19,"input":63507,"output":9047,"cacheRead":437120,"cost":0.4038,"duration":204.7}
+{"ts":"2026-04-20T20:58:11.457Z","agent":"implementer","wish":"renderMutationHighlightsSection","layer":3,"status":"pass","turns":29,"input":60682,"output":8355,"cacheRead":785408,"cost":0.4734,"duration":241.8}
