@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-20T20:13:19.404Z
+updated: 2026-04-20T20:14:38.784Z
 
 ## Wishes
 
@@ -11,7 +11,7 @@ updated: 2026-04-20T20:13:19.404Z
 | validateSourceFileReference | src/contracts/case-manifest.validation.ts | 2 | pass | 284.0s |
 | validateCaseMetadata | src/contracts/case-manifest.validation.ts | 2 | pass | 67.0s |
 | validateMutationHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 319.4s |
-| validateExpressionHighlight | src/contracts/case-manifest.validation.ts | 2 | fail | 222.6s |
+| validateExpressionHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 72.5s |
 | validateCopyNumberHighlight | src/contracts/case-manifest.validation.ts | 2 | pass | 350.8s |
 | validateSlideReference | src/contracts/case-manifest.validation.ts | 2 | pass | 275.4s |
 | validateGenomicSnapshot | src/contracts/case-manifest.validation.ts | 1 | pending | - |
@@ -42,3 +42,7 @@ updated: 2026-04-20T20:13:19.404Z
 - 16:12:12 validateCaseMetadata: running
 - 16:13:19 validateCaseMetadata: pass (67.0s, $0.0796)
 - 16:13:19 implementer_post verification for validateCaseMetadata: pass
+- 16:13:25 validateExpressionHighlight: running
+- 16:14:38 validateExpressionHighlight: pass (72.5s, $0.1163)
+- 16:14:38 implementer_post verification for validateExpressionHighlight: pass
+- 16:14:38 layer 2 verification: pass

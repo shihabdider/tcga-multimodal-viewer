@@ -6,3 +6,4 @@
 {"ts":"2026-04-20T20:11:19.561Z","agent":"implementer","wish":"validateMutationHighlight","layer":2,"status":"pass","turns":31,"input":53064,"output":12565,"cacheRead":589440,"cost":0.4685,"duration":319.4}
 {"ts":"2026-04-20T20:11:51.270Z","agent":"implementer","wish":"validateCopyNumberHighlight","layer":2,"status":"pass","turns":39,"input":56072,"output":10546,"cacheRead":1023488,"cost":0.5542,"duration":350.8}
 {"ts":"2026-04-20T20:13:19.404Z","agent":"implementer","wish":"validateCaseMetadata","layer":2,"status":"pass","turns":8,"input":13729,"output":1775,"cacheRead":74496,"cost":0.0796,"duration":67}
+{"ts":"2026-04-20T20:14:38.784Z","agent":"implementer","wish":"validateExpressionHighlight","layer":2,"status":"pass","turns":8,"input":20502,"output":2495,"cacheRead":110336,"cost":0.1163,"duration":72.5}
