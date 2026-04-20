@@ -18,3 +18,4 @@
 {"ts":"2026-04-20T20:58:12.597Z","agent":"implementer","wish":"loadCaseManifestFromFile","layer":3,"status":"pass","turns":21,"input":70277,"output":9441,"cacheRead":473344,"cost":0.4356,"duration":242.1}
 {"ts":"2026-04-20T20:58:25.587Z","agent":"implementer","wish":"renderCaseMetadataSection","layer":3,"status":"pass","turns":23,"input":34847,"output":10709,"cacheRead":659072,"cost":0.4125,"duration":256.1}
 {"ts":"2026-04-20T21:01:27.873Z","agent":"implementer","wish":"renderGenomicSnapshotSection","layer":2,"status":"pass","turns":20,"input":70021,"output":6398,"cacheRead":483584,"cost":0.3919,"duration":170.3}
+{"ts":"2026-04-20T21:04:33.582Z","agent":"implementer","wish":"renderCasePage","layer":1,"status":"pass","turns":18,"input":40604,"output":7758,"cacheRead":419328,"cost":0.3227,"duration":178.7}

@@ -8,7 +8,38 @@ import type {
 } from "../contracts/case-manifest";
 
 export function renderCasePage(manifest: CaseManifest): string {
-  throw new Error("not implemented: renderCasePage");
+  const escapeHtml = (value: string): string =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const renderedCaseMetadataSection = renderCaseMetadataSection(manifest.case);
+  const renderedGenomicSnapshotSection = renderGenomicSnapshotSection(
+    manifest.genomicSnapshot,
+  );
+  const pageTitle = `${manifest.case.caseId} | TCGA multimodal viewer`;
+
+  return [
+    "<!DOCTYPE html>",
+    '<html lang="en">',
+    "<head>",
+    '  <meta charset="utf-8">',
+    '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+    `  <title>${escapeHtml(pageTitle)}</title>`,
+    '  <link rel="stylesheet" href="styles.css">',
+    "</head>",
+    "<body>",
+    "  <main>",
+    `    <h1>${escapeHtml(manifest.case.caseId)}</h1>`,
+    renderedCaseMetadataSection,
+    renderedGenomicSnapshotSection,
+    "  </main>",
+    "</body>",
+    "</html>",
+  ].join("\n");
 }
 
 export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
