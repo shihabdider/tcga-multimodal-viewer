@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import manifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
+import type { ExpressionHighlight } from "../src/contracts/case-manifest";
 import {
   buildSingleCaseStaticApp,
   DEFAULT_OUTPUT_DIRECTORY,
@@ -8,6 +9,7 @@ import {
 } from "../src/app/build-single-case-static-app";
 import {
   renderCasePage,
+  renderExpressionHighlightsSection,
   renderGenomicSnapshotSection,
 } from "../src/rendering/case-page";
 
@@ -42,6 +44,56 @@ describe("single-case static app rendering", () => {
     expect(rendered).toContain(
       String(manifest.genomicSnapshot.copyNumberHighlights[2].copyNumber),
     );
+  });
+});
+
+describe("renderExpressionHighlightsSection", () => {
+  test("renders the expression metric label plus each highlight value", () => {
+    const highlights: ExpressionHighlight[] = [
+      {
+        geneSymbol: "ERBB2",
+        tpmUnstranded: 27.7342,
+      },
+      {
+        geneSymbol: "KRT5",
+        tpmUnstranded: 2452.7661,
+      },
+    ];
+
+    const rendered = renderExpressionHighlightsSection(
+      "tpm_unstranded",
+      highlights,
+    );
+
+    expect(rendered).toContain("Expression highlights");
+    expect(rendered).toContain("TPM (unstranded)");
+    expect(rendered).toContain('data-expression-metric="tpm_unstranded"');
+    expect(rendered).toContain("ERBB2");
+    expect(rendered).toContain("27.7342");
+    expect(rendered).toContain("KRT5");
+    expect(rendered).toContain("2452.7661");
+    expect(rendered).not.toContain("No expression highlights available.");
+  });
+
+  test("renders zero-valued highlights without dropping the numeric value", () => {
+    const rendered = renderExpressionHighlightsSection("tpm_unstranded", [
+      {
+        geneSymbol: "PGR",
+        tpmUnstranded: 0,
+      },
+    ]);
+
+    expect(rendered).toContain("PGR");
+    expect(rendered).toContain(">0<");
+  });
+
+  test("renders a readable empty state when no expression highlights are present", () => {
+    const rendered = renderExpressionHighlightsSection("tpm_unstranded", []);
+
+    expect(rendered).toContain("Expression highlights");
+    expect(rendered).toContain("TPM (unstranded)");
+    expect(rendered).toContain('data-expression-metric="tpm_unstranded"');
+    expect(rendered).toContain("No expression highlights available.");
   });
 });
 

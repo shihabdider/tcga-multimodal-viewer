@@ -22,22 +22,181 @@ export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string 
 export function renderMutationHighlightsSection(
   highlights: MutationHighlight[],
 ): string {
-  throw new Error("not implemented: renderMutationHighlightsSection");
+  const escapeHtml = (value: string): string =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  if (highlights.length === 0) {
+    return [
+      '<section class="genomic-panel mutation-highlights">',
+      "  <h3>Somatic mutation highlights</h3>",
+      "  <p>No somatic mutations highlighted for this case.</p>",
+      "</section>",
+    ].join("\n");
+  }
+
+  const renderedHighlights = highlights
+    .map(
+      (highlight) =>
+        [
+          '    <li class="mutation-highlight">',
+          `      <strong>${escapeHtml(highlight.geneSymbol)}</strong>`,
+          `      <span>${escapeHtml(highlight.proteinChange)}</span>`,
+          `      <span>${escapeHtml(highlight.variantClassification)}</span>`,
+          `      <span>Impact: ${escapeHtml(highlight.impact)}</span>`,
+          "    </li>",
+        ].join("\n"),
+    )
+    .join("\n");
+
+  return [
+    '<section class="genomic-panel mutation-highlights">',
+    "  <h3>Somatic mutation highlights</h3>",
+    '  <ul class="highlight-list">',
+    renderedHighlights,
+    "  </ul>",
+    "</section>",
+  ].join("\n");
 }
 
 export function renderExpressionHighlightsSection(
   metric: GenomicSnapshot["expressionMetric"],
   highlights: ExpressionHighlight[],
 ): string {
-  throw new Error("not implemented: renderExpressionHighlightsSection");
+  const escapeHtml = (value: string): string =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const metricLabel = {
+    tpm_unstranded: "TPM (unstranded)",
+  }[metric];
+
+  const renderedHighlights =
+    highlights.length === 0
+      ? '<p class="empty-state">No expression highlights available.</p>'
+      : `<ul class="expression-highlight-list">${highlights
+          .map(
+            (highlight) =>
+              `<li><span class="gene-symbol">${escapeHtml(highlight.geneSymbol)}</span><span class="expression-value">${String(highlight.tpmUnstranded)}</span></li>`,
+          )
+          .join("")}</ul>`;
+
+  return `<section class="genomic-highlights expression-highlights"><h3>Expression highlights</h3><p class="expression-metric" data-expression-metric="${escapeHtml(metric)}">Metric: ${metricLabel}</p>${renderedHighlights}</section>`;
 }
 
 export function renderCopyNumberHighlightsSection(
   highlights: CopyNumberHighlight[],
 ): string {
-  throw new Error("not implemented: renderCopyNumberHighlightsSection");
+  const escapeHtml = (value: string): string =>
+    value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const heading = "Gene-level copy-number highlights";
+
+  if (highlights.length === 0) {
+    return [
+      '<section class="copy-number-highlights">',
+      `<h3>${heading}</h3>`,
+      '<p class="empty-state">No copy-number highlights available.</p>',
+      "</section>",
+    ].join("");
+  }
+
+  const items = highlights
+    .map(
+      (highlight) =>
+        `<li><span class="gene-symbol">${escapeHtml(highlight.geneSymbol)}</span>: <span class="copy-number-value">${highlight.copyNumber}</span></li>`,
+    )
+    .join("");
+
+  return [
+    '<section class="copy-number-highlights">',
+    `<h3>${heading}</h3>`,
+    `<ul>${items}</ul>`,
+    "</section>",
+  ].join("");
 }
 
 export function renderSingleCaseStylesheet(): string {
-  throw new Error("not implemented: renderSingleCaseStylesheet");
+  return `body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  color: #1f2933;
+  background: #f8fafc;
+}
+
+main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+section {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid #d9e2ec;
+  border-radius: 0.5rem;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.75rem;
+  line-height: 1.25;
+}
+
+p,
+ul,
+dl,
+table {
+  margin: 0.75rem 0 0;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+}
+
+dt {
+  font-weight: 600;
+}
+
+dd {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #d9e2ec;
+}
+
+a {
+  color: #0b69a3;
+}
+
+code {
+  font-family: "SFMono-Regular", ui-monospace, monospace;
+}`;
 }
