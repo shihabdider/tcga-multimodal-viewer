@@ -21,3 +21,4 @@
 {"ts":"2026-04-20T21:04:33.582Z","agent":"implementer","wish":"renderCasePage","layer":1,"status":"pass","turns":18,"input":40604,"output":7758,"cacheRead":419328,"cost":0.3227,"duration":178.7}
 {"ts":"2026-04-20T21:06:54.957Z","agent":"implementer","wish":"buildSingleCaseStaticApp","layer":1,"status":"pass","turns":13,"input":33767,"output":5706,"cacheRead":268672,"cost":0.2372,"duration":136.5}
 {"ts":"2026-04-20T21:09:43.410Z","agent":"implementer","wish":"main","layer":0,"status":"pass","turns":14,"input":29535,"output":7202,"cacheRead":253440,"cost":0.2452,"duration":163.5}
+{"ts":"2026-04-20T21:11:33.848Z","agent":"implementer","wish":"renderExpressionHighlightsSection","layer":3,"status":"pass","turns":10,"input":24971,"output":3494,"cacheRead":159872,"cost":0.1548,"duration":88.6}

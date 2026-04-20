@@ -1,8 +1,8 @@
 # Status
 
 phase: 2
-layer: 0
-updated: 2026-04-20T21:09:43.410Z
+layer: 3
+updated: 2026-04-20T21:11:33.848Z
 
 ## Wishes
 
@@ -10,7 +10,7 @@ updated: 2026-04-20T21:09:43.410Z
 |------|------|-------|--------|------|
 | renderCaseMetadataSection | src/rendering/case-page.ts | 3 | pass | 256.1s |
 | renderMutationHighlightsSection | src/rendering/case-page.ts | 3 | pass | 241.8s |
-| renderExpressionHighlightsSection | src/rendering/case-page.ts | 3 | fail | 200.9s |
+| renderExpressionHighlightsSection | src/rendering/case-page.ts | 3 | pass | 88.6s |
 | renderCopyNumberHighlightsSection | src/rendering/case-page.ts | 3 | fail | 204.7s |
 | renderSingleCaseStylesheet | src/rendering/case-page.ts | 3 | pass | 167.1s |
 | loadCaseManifestFromFile | src/app/build-single-case-static-app.ts | 3 | pass | 242.1s |
@@ -60,3 +60,6 @@ updated: 2026-04-20T21:09:43.410Z
 - 17:09:42 main: pass (163.5s, $0.2452)
 - 17:09:43 implementer_post verification for main: pass
 - 17:09:43 layer 0 verification: pass
+- 17:10:04 renderExpressionHighlightsSection: running
+- 17:11:33 renderExpressionHighlightsSection: pass (88.6s, $0.1548)
+- 17:11:33 implementer_post verification for renderExpressionHighlightsSection: pass
