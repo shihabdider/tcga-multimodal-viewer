@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 3
-updated: 2026-04-20T20:56:57.448Z
+updated: 2026-04-20T20:57:15.378Z
 
 ## Wishes
 
@@ -14,7 +14,7 @@ updated: 2026-04-20T20:56:57.448Z
 | renderCopyNumberHighlightsSection | src/rendering/case-page.ts | 3 | running | - |
 | renderSingleCaseStylesheet | src/rendering/case-page.ts | 3 | pass | 167.1s |
 | loadCaseManifestFromFile | src/app/build-single-case-static-app.ts | 3 | running | - |
-| writeStaticAssets | src/app/build-single-case-static-app.ts | 3 | running | - |
+| writeStaticAssets | src/app/build-single-case-static-app.ts | 3 | pass | 184.7s |
 | renderGenomicSnapshotSection | src/rendering/case-page.ts | 2 | pending | - |
 | renderCasePage | src/rendering/case-page.ts | 1 | pending | - |
 | buildSingleCaseStaticApp | src/app/build-single-case-static-app.ts | 1 | pending | - |
@@ -33,3 +33,5 @@ updated: 2026-04-20T20:56:57.448Z
 - 16:54:10 writeStaticAssets: running
 - 16:56:57 renderSingleCaseStylesheet: pass (167.1s, $0.3210)
 - 16:56:57 implementer_post verification for renderSingleCaseStylesheet: pass
+- 16:57:15 writeStaticAssets: pass (184.7s, $0.3302)
+- 16:57:15 implementer_post verification for writeStaticAssets: pass

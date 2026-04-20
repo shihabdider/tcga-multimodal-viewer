@@ -11,3 +11,4 @@
 {"ts":"2026-04-20T20:22:26.844Z","agent":"implementer","wish":"validateCaseManifest","layer":0,"status":"pass","turns":21,"input":36196,"output":7416,"cacheRead":588160,"cost":0.3488,"duration":220.2}
 {"ts":"2026-04-20T20:53:29.011Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":19,"input":38914,"output":24227,"cacheRead":534784,"cost":0.5944,"duration":494.6}
 {"ts":"2026-04-20T20:56:57.448Z","agent":"implementer","wish":"renderSingleCaseStylesheet","layer":3,"status":"pass","turns":18,"input":53454,"output":6929,"cacheRead":333824,"cost":0.321,"duration":167.1}
+{"ts":"2026-04-20T20:57:15.378Z","agent":"implementer","wish":"writeStaticAssets","layer":3,"status":"pass","turns":20,"input":40353,"output":8106,"cacheRead":430720,"cost":0.3302,"duration":184.7}
