@@ -355,5 +355,25 @@ export function validateSlideReference(value: unknown): SlideReference {
 }
 
 export function validateCaseManifest(value: unknown): CaseManifest {
-  throw new Error("not implemented: validateCaseManifest");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("CaseManifest must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (candidate.schemaVersion !== "case-manifest/v1") {
+    throw new Error('CaseManifest.schemaVersion must be "case-manifest/v1"');
+  }
+
+  const slides = candidate.slides;
+  if (!Array.isArray(slides)) {
+    throw new Error("CaseManifest.slides must be an array");
+  }
+
+  return {
+    schemaVersion: "case-manifest/v1",
+    case: validateCaseMetadata(candidate.case),
+    genomicSnapshot: validateGenomicSnapshot(candidate.genomicSnapshot),
+    slides: slides.map((slide) => validateSlideReference(slide)),
+  };
 }

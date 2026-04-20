@@ -8,3 +8,4 @@
 {"ts":"2026-04-20T20:13:19.404Z","agent":"implementer","wish":"validateCaseMetadata","layer":2,"status":"pass","turns":8,"input":13729,"output":1775,"cacheRead":74496,"cost":0.0796,"duration":67}
 {"ts":"2026-04-20T20:14:38.784Z","agent":"implementer","wish":"validateExpressionHighlight","layer":2,"status":"pass","turns":8,"input":20502,"output":2495,"cacheRead":110336,"cost":0.1163,"duration":72.5}
 {"ts":"2026-04-20T20:18:34.923Z","agent":"implementer","wish":"validateGenomicSnapshot","layer":1,"status":"pass","turns":15,"input":35359,"output":9417,"cacheRead":326784,"cost":0.3113,"duration":220.9}
+{"ts":"2026-04-20T20:22:26.844Z","agent":"implementer","wish":"validateCaseManifest","layer":0,"status":"pass","turns":21,"input":36196,"output":7416,"cacheRead":588160,"cost":0.3488,"duration":220.2}
