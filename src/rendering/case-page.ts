@@ -7,15 +7,16 @@ import type {
   MutationHighlight,
 } from "../contracts/case-manifest";
 
-export function renderCasePage(manifest: CaseManifest): string {
-  const escapeHtml = (value: string): string =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
+export function renderCasePage(manifest: CaseManifest): string {
   const renderedCaseMetadataSection = renderCaseMetadataSection(manifest.case);
   const renderedGenomicSnapshotSection = renderGenomicSnapshotSection(
     manifest.genomicSnapshot,
@@ -43,14 +44,6 @@ export function renderCasePage(manifest: CaseManifest): string {
 }
 
 export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
-  const escapeHtml = (value: string): string =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   const summaryFields: Array<{ label: string; value: string }> = [
     { label: "Case ID", value: caseMetadata.caseId },
     { label: "GDC Case ID", value: caseMetadata.gdcCaseId },
@@ -109,14 +102,6 @@ export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string 
 export function renderMutationHighlightsSection(
   highlights: MutationHighlight[],
 ): string {
-  const escapeHtml = (value: string): string =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   if (highlights.length === 0) {
     return [
       '<section class="genomic-panel mutation-highlights">',
@@ -154,14 +139,6 @@ export function renderExpressionHighlightsSection(
   metric: GenomicSnapshot["expressionMetric"],
   highlights: ExpressionHighlight[],
 ): string {
-  const escapeHtml = (value: string): string =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   const metricLabel = {
     tpm_unstranded: "TPM (unstranded)",
   }[metric];
@@ -182,14 +159,6 @@ export function renderExpressionHighlightsSection(
 export function renderCopyNumberHighlightsSection(
   highlights: CopyNumberHighlight[],
 ): string {
-  const escapeHtml = (value: string): string =>
-    value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-
   const heading = "Gene-level copy-number highlights";
 
   if (highlights.length === 0) {
