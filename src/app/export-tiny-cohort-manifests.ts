@@ -61,7 +61,44 @@ export async function fetchPublicSlideReferenceBase(
 }
 
 export async function downloadOpenGdcFileText(fileId: string): Promise<string> {
-  throw new Error("not implemented: downloadOpenGdcFileText");
+  const endpoint = `https://api.gdc.cancer.gov/data/${fileId}`;
+  const describeError = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error);
+
+  let response: Response;
+
+  try {
+    response = await fetch(endpoint);
+  } catch (error) {
+    throw new Error(
+      `Failed to download open GDC file ${fileId}: ${describeError(error)}`,
+    );
+  }
+
+  if (!response.ok) {
+    const statusSuffix = response.statusText ? ` ${response.statusText}` : "";
+
+    throw new Error(
+      `Failed to download open GDC file ${fileId}: ${response.status}${statusSuffix}`,
+    );
+  }
+
+  const responseBytes = new Uint8Array(await response.arrayBuffer());
+  const isGzipEncoded =
+    responseBytes.length >= 2 &&
+    responseBytes[0] === 0x1f &&
+    responseBytes[1] === 0x8b;
+  const fileText = isGzipEncoded
+    ? (await import("node:zlib")).gunzipSync(responseBytes).toString("utf8")
+    : new TextDecoder().decode(responseBytes);
+
+  if (fileText.trim().length === 0) {
+    throw new Error(
+      `Downloaded open GDC file ${fileId} must contain non-empty text`,
+    );
+  }
+
+  return fileText;
 }
 
 export function selectMutationHighlights(
