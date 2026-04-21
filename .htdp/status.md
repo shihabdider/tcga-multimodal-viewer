@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 3
-updated: 2026-04-21T16:48:01.314Z
+updated: 2026-04-21T16:51:50.354Z
 
 ## Wishes
 
@@ -19,7 +19,7 @@ updated: 2026-04-21T16:48:01.314Z
 | selectExpressionHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | selectCopyNumberHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | buildIdcSlimViewerHandoff | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 162.0s |
-| deriveCohortManifest | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
+| deriveCohortManifest | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 222.1s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 253.6s |
 | validateTinyCaseExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 2 | pending | - |
 | deriveGenomicSnapshot | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
@@ -48,3 +48,6 @@ updated: 2026-04-21T16:48:01.314Z
 - 12:43:47 serializeNormalizedManifestJson: running
 - 12:48:00 serializeNormalizedManifestJson: pass (253.6s, $0.3629)
 - 12:48:01 implementer_post verification for serializeNormalizedManifestJson: pass
+- 12:48:07 deriveCohortManifest: running
+- 12:51:49 deriveCohortManifest: pass (222.1s, $0.4602)
+- 12:51:50 implementer_post verification for deriveCohortManifest: pass

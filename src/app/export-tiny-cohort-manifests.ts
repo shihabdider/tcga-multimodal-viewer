@@ -125,7 +125,43 @@ export function deriveCohortManifest(
   recipe: TinyCohortExportRecipe,
   caseManifests: CaseManifest[],
 ): CohortManifest {
-  throw new Error("not implemented: deriveCohortManifest");
+  const recipeCaseIds = new Set(recipe.cases.map(({ caseId }) => caseId));
+  const manifestsByCaseId = new Map<CaseId, CaseManifest>();
+
+  for (const caseManifest of caseManifests) {
+    const caseId = caseManifest.case.caseId;
+
+    if (!recipeCaseIds.has(caseId)) {
+      throw new Error(`Unexpected case manifest for non-recipe case ${caseId}`);
+    }
+
+    if (manifestsByCaseId.has(caseId)) {
+      throw new Error(`Duplicate case manifest for case ${caseId}`);
+    }
+
+    if (caseManifest.case.projectId !== recipe.projectId) {
+      throw new Error(`Case manifest ${caseId} does not match recipe.projectId`);
+    }
+
+    manifestsByCaseId.set(caseId, caseManifest);
+  }
+
+  return {
+    schemaVersion: "cohort-manifest/v1",
+    cohortId: recipe.cohortId,
+    projectId: recipe.projectId,
+    title: recipe.title,
+    description: recipe.description,
+    caseManifestPaths: recipe.cases.map(({ caseId }) => {
+      const caseManifest = manifestsByCaseId.get(caseId);
+
+      if (!caseManifest) {
+        throw new Error(`Missing case manifest for recipe case ${caseId}`);
+      }
+
+      return `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
+    }),
+  };
 }
 
 export function serializeNormalizedManifestJson(
