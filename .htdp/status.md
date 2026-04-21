@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 3
-updated: 2026-04-21T17:10:04.646Z
+updated: 2026-04-21T17:16:10.799Z
 
 ## Wishes
 
@@ -13,7 +13,7 @@ updated: 2026-04-21T17:10:04.646Z
 | validateTinyCaseSelectedFileIds | src/contracts/tiny-cohort-export.validation.ts | 3 | pass | 170.8s |
 | fetchPublicCaseMetadata | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | fetchPublicSourceFileReference | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 232.8s |
-| fetchPublicSlideReferenceBase | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
+| fetchPublicSlideReferenceBase | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 359.4s |
 | downloadOpenGdcFileText | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 191.4s |
 | selectMutationHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 248.9s |
 | selectExpressionHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 232.3s |
@@ -66,3 +66,6 @@ updated: 2026-04-21T17:10:04.646Z
 - 13:06:11 fetchPublicSourceFileReference: running
 - 13:10:04 fetchPublicSourceFileReference: pass (232.8s, $0.3579)
 - 13:10:04 implementer_post verification for fetchPublicSourceFileReference: pass
+- 13:10:10 fetchPublicSlideReferenceBase: running
+- 13:16:10 fetchPublicSlideReferenceBase: pass (359.4s, $0.5700)
+- 13:16:10 implementer_post verification for fetchPublicSlideReferenceBase: pass

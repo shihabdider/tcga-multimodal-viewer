@@ -144,7 +144,168 @@ export async function fetchPublicSourceFileReference(
 export async function fetchPublicSlideReferenceBase(
   fileId: string,
 ): Promise<Omit<SlideReference, "viewerHandoff">> {
-  throw new Error("not implemented: fetchPublicSlideReferenceBase");
+  const endpoint = `https://api.gdc.cancer.gov/files/${fileId}?expand=cases.samples.portions.slides`;
+  const describeError = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error);
+  const readFirstRecord = (value: unknown, path: string): Record<string, unknown> => {
+    if (!Array.isArray(value) || value.length === 0) {
+      throw new Error(`response.data.${path} must be a non-empty array`);
+    }
+
+    const firstValue = value[0];
+
+    if (
+      typeof firstValue !== "object" ||
+      firstValue === null ||
+      Array.isArray(firstValue)
+    ) {
+      throw new Error(`response.data.${path}[0] must be an object`);
+    }
+
+    return firstValue as Record<string, unknown>;
+  };
+  const inferSampleTypeFromSlideSubmitterId = (
+    slideSubmitterId: unknown,
+  ): string | undefined => {
+    if (typeof slideSubmitterId !== "string") {
+      return undefined;
+    }
+
+    const sampleTypeByCode: Record<string, string> = {
+      "01": "Primary Tumor",
+      "02": "Recurrent Tumor",
+      "03": "Primary Blood Derived Cancer - Peripheral Blood",
+      "04": "Recurrent Blood Derived Cancer - Bone Marrow",
+      "05": "Additional - New Primary",
+      "06": "Metastatic",
+      "07": "Additional Metastatic",
+      "08": "Human Tumor Original Cells",
+      "09": "Primary Blood Derived Cancer - Bone Marrow",
+      "10": "Blood Derived Normal",
+      "11": "Solid Tissue Normal",
+      "12": "Buccal Cell Normal",
+      "13": "EBV Immortalized Normal",
+      "14": "Bone Marrow Normal",
+      "20": "Control Analyte",
+      "40": "Recurrent Blood Derived Cancer - Peripheral Blood",
+      "50": "Cell Lines",
+      "60": "Primary Xenograft Tissue",
+      "61": "Cell Line Derived Xenograft Tissue",
+    };
+    const barcodeParts = slideSubmitterId.split("-");
+    const sampleDescriptor = barcodeParts[3];
+    const sampleTypeCode = sampleDescriptor?.slice(0, 2);
+
+    return sampleTypeCode ? sampleTypeByCode[sampleTypeCode] : undefined;
+  };
+
+  let response: Response;
+
+  try {
+    response = await fetch(endpoint);
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch public GDC slide file metadata ${fileId}: ${describeError(error)}`,
+    );
+  }
+
+  if (!response.ok) {
+    const statusSuffix = response.statusText ? ` ${response.statusText}` : "";
+
+    throw new Error(
+      `Failed to fetch public GDC slide file metadata ${fileId}: ${response.status}${statusSuffix}`,
+    );
+  }
+
+  let responseJson: unknown;
+
+  try {
+    responseJson = await response.json();
+  } catch (error) {
+    throw new Error(
+      `Public GDC slide file metadata ${fileId} is malformed: ${describeError(error)}`,
+    );
+  }
+
+  if (
+    typeof responseJson !== "object" ||
+    responseJson === null ||
+    Array.isArray(responseJson)
+  ) {
+    throw new Error(
+      `Public GDC slide file metadata ${fileId} is malformed: response body must be an object`,
+    );
+  }
+
+  const { data } = responseJson as { data?: unknown };
+
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    throw new Error(
+      `Public GDC slide file metadata ${fileId} is malformed: response.data must be an object`,
+    );
+  }
+
+  const dataRecord = data as Record<string, unknown>;
+  const access = dataRecord.access;
+
+  if (access !== "open") {
+    throw new Error(`Public GDC slide file ${fileId} must have open access`);
+  }
+
+  const { validateSlideReference } = await import(
+    "../contracts/case-manifest.validation"
+  );
+
+  try {
+    const caseRecord = readFirstRecord(dataRecord.cases, "cases");
+    const sampleRecord = readFirstRecord(caseRecord.samples, "cases[0].samples");
+    const portionRecord = readFirstRecord(
+      sampleRecord.portions,
+      "cases[0].samples[0].portions",
+    );
+    const slideRecord = readFirstRecord(
+      portionRecord.slides,
+      "cases[0].samples[0].portions[0].slides",
+    );
+    const sampleType =
+      typeof sampleRecord.sample_type === "string" &&
+      sampleRecord.sample_type.trim().length > 0
+        ? sampleRecord.sample_type
+        : inferSampleTypeFromSlideSubmitterId(slideRecord.submitter_id);
+    const validatedSlideReference = validateSlideReference({
+      source: "gdc",
+      access,
+      fileId: dataRecord.file_id,
+      fileName: dataRecord.file_name,
+      slideSubmitterId: slideRecord.submitter_id,
+      slideId: slideRecord.slide_id,
+      sampleType,
+      experimentalStrategy: dataRecord.experimental_strategy,
+      publicPageUrl:
+        typeof dataRecord.file_id === "string"
+          ? `https://portal.gdc.cancer.gov/files/${dataRecord.file_id}`
+          : undefined,
+      publicDownloadUrl:
+        typeof dataRecord.file_id === "string"
+          ? `https://api.gdc.cancer.gov/data/${dataRecord.file_id}`
+          : undefined,
+      viewerHandoff: {
+        kind: "external",
+        provider: "idc-slim",
+        studyInstanceUid: "1.2.3",
+        seriesInstanceUid: "1.2.3.4",
+        url: "https://viewer.imaging.datacommons.cancer.gov/slim/studies/1.2.3/series/1.2.3.4",
+      },
+    });
+    const { viewerHandoff: _viewerHandoff, ...slideReferenceBase } =
+      validatedSlideReference;
+
+    return slideReferenceBase;
+  } catch (error) {
+    throw new Error(
+      `Public GDC slide file metadata ${fileId} is malformed: ${describeError(error)}`,
+    );
+  }
 }
 
 export async function downloadOpenGdcFileText(fileId: string): Promise<string> {
