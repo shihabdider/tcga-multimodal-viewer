@@ -61,3 +61,4 @@
 {"ts":"2026-04-21T18:31:13.422Z","agent":"implementer","wish":"coverBuildTinyCohortStaticAppMain","layer":0,"status":"fail","turns":18,"input":57835,"output":16103,"cacheRead":424320,"cost":0.4922,"duration":328.8}
 {"ts":"2026-04-21T18:32:05.837Z","agent":"implementer","wish":"coverTinyBrcaExportToStaticViewerThinSlice","layer":0,"status":"fail","turns":32,"input":135302,"output":14609,"cacheRead":992896,"cost":0.8056,"duration":381.1}
 {"ts":"2026-04-21T18:33:12.221Z","agent":"implementer","wish":"coverExportTinyCohortManifestsMain","layer":0,"status":"pass","turns":29,"input":52723,"output":19220,"cacheRead":1112576,"cost":0.6983,"duration":447.8}
+{"ts":"2026-04-21T18:47:02.281Z","agent":"abstractor","wish":null,"layer":null,"status":"pass","turns":41,"input":71523,"output":36760,"cacheRead":2251904,"cost":1.2932,"duration":791.4}

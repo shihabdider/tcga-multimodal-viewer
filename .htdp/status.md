@@ -1,8 +1,8 @@
 # Status
 
-phase: 2
+phase: 3
 layer: 0
-updated: 2026-04-21T18:33:12.221Z
+updated: 2026-04-21T18:47:02.281Z
 
 ## Wishes
 
@@ -29,3 +29,5 @@ updated: 2026-04-21T18:33:12.221Z
 - 14:32:05 implementer_post verification for coverTinyBrcaExportToStaticViewerThinSlice: fail
 - 14:33:11 coverExportTinyCohortManifestsMain: pass (447.8s, $0.6983)
 - 14:33:12 implementer_post verification for coverExportTinyCohortManifestsMain: pass
+- 14:47:01 abstractor pass
+- 14:47:02 abstractor_post verification: pass

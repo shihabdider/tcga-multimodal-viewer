@@ -1,9 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { dirname, isAbsolute, join } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  resolvePathFromCwd,
+  withTempProjectRoot,
+} from "./helpers/temp-project-root";
 import tcga3cAalkManifestJson from "../manifests/tcga-brca/tcga-3c-aalk.case-manifest.json";
 import tcga4hAaakManifestJson from "../manifests/tcga-brca/tcga-4h-aaak.case-manifest.json";
 import cohortManifestJson from "../manifests/tcga-brca/tcga-brca.tiny-cohort-manifest.json";
@@ -61,10 +64,6 @@ function buildCaseSlug(caseId: string): string {
   return caseId.toLowerCase();
 }
 
-function resolvePathFromCwd(path: string): string {
-  return isAbsolute(path) ? path : join(process.cwd(), path);
-}
-
 function renderExpectedCohortIndexPage(): string {
   return renderCohortIndexPage({
     title: checkedCohortManifest.title,
@@ -96,23 +95,6 @@ function renderExpectedCasePage(manifest: CaseManifest): string {
       })),
     },
   });
-}
-
-async function withTempProjectRoot(
-  run: (projectRoot: string) => Promise<void>,
-): Promise<void> {
-  const projectRoot = await mkdtemp(
-    join(tmpdir(), "tiny-cohort-static-app-main-"),
-  );
-  const previousWorkingDirectory = process.cwd();
-
-  try {
-    process.chdir(projectRoot);
-    await run(projectRoot);
-  } finally {
-    process.chdir(previousWorkingDirectory);
-    await rm(projectRoot, { recursive: true, force: true });
-  }
 }
 
 async function writeCohortManifestBundle(manifestPath: string): Promise<void> {
@@ -178,60 +160,72 @@ export async function coverBuildTinyCohortStaticAppMain(
 
 describe("coverBuildTinyCohortStaticAppMain", () => {
   test("builds the static app when manifest and output paths are both provided", async () => {
-    await withTempProjectRoot(async (projectRoot) => {
-      const manifestPath = join(
-        projectRoot,
-        "dist",
-        "tcga-brca-manifest-export",
-        "tcga-brca.tiny-cohort-manifest.json",
-      );
-      const outputDirectory = "dist/tcga-brca-tiny-cohort-from-export";
+    await withTempProjectRoot(
+      "tiny-cohort-static-app-main-",
+      async (projectRoot) => {
+        const manifestPath = join(
+          projectRoot,
+          "dist",
+          "tcga-brca-manifest-export",
+          "tcga-brca.tiny-cohort-manifest.json",
+        );
+        const outputDirectory = "dist/tcga-brca-tiny-cohort-from-export";
 
-      await writeCohortManifestBundle(manifestPath);
-      await coverBuildTinyCohortStaticAppMain([
-        "dist/tcga-brca-manifest-export/tcga-brca.tiny-cohort-manifest.json",
-        outputDirectory,
-      ]);
-    });
+        await writeCohortManifestBundle(manifestPath);
+        await coverBuildTinyCohortStaticAppMain([
+          "dist/tcga-brca-manifest-export/tcga-brca.tiny-cohort-manifest.json",
+          outputDirectory,
+        ]);
+      },
+    );
   });
 
   test("uses the default output directory when only a manifest path is provided", async () => {
-    await withTempProjectRoot(async (projectRoot) => {
-      const manifestPath = join(
-        projectRoot,
-        "fixtures",
-        "exported",
-        "tcga-brca.tiny-cohort-manifest.json",
-      );
+    await withTempProjectRoot(
+      "tiny-cohort-static-app-main-",
+      async (projectRoot) => {
+        const manifestPath = join(
+          projectRoot,
+          "fixtures",
+          "exported",
+          "tcga-brca.tiny-cohort-manifest.json",
+        );
 
-      await writeCohortManifestBundle(manifestPath);
-      await coverBuildTinyCohortStaticAppMain([
-        "fixtures/exported/tcga-brca.tiny-cohort-manifest.json",
-      ]);
-    });
+        await writeCohortManifestBundle(manifestPath);
+        await coverBuildTinyCohortStaticAppMain([
+          "fixtures/exported/tcga-brca.tiny-cohort-manifest.json",
+        ]);
+      },
+    );
   });
 
   test("uses the default manifest and output paths when argv is empty", async () => {
-    await withTempProjectRoot(async (projectRoot) => {
-      await writeCohortManifestBundle(
-        join(projectRoot, DEFAULT_COHORT_MANIFEST_PATH),
-      );
+    await withTempProjectRoot(
+      "tiny-cohort-static-app-main-",
+      async (projectRoot) => {
+        await writeCohortManifestBundle(
+          join(projectRoot, DEFAULT_COHORT_MANIFEST_PATH),
+        );
 
-      await coverBuildTinyCohortStaticAppMain([]);
-    });
+        await coverBuildTinyCohortStaticAppMain([]);
+      },
+    );
   });
 
   test("invokes main when the module is run directly with Bun", async () => {
-    await withTempProjectRoot(async (projectRoot) => {
-      await writeCohortManifestBundle(
-        join(projectRoot, DEFAULT_COHORT_MANIFEST_PATH),
-      );
+    await withTempProjectRoot(
+      "tiny-cohort-static-app-main-",
+      async (projectRoot) => {
+        await writeCohortManifestBundle(
+          join(projectRoot, DEFAULT_COHORT_MANIFEST_PATH),
+        );
 
-      const { exitCode, stderr } = await runBuildScriptDirectly(projectRoot);
+        const { exitCode, stderr } = await runBuildScriptDirectly(projectRoot);
 
-      expect(exitCode).toBe(0);
-      expect(stderr).toBe("");
-      await expectBuiltAssets(join(projectRoot, DEFAULT_OUTPUT_DIRECTORY));
-    });
+        expect(exitCode).toBe(0);
+        expect(stderr).toBe("");
+        await expectBuiltAssets(join(projectRoot, DEFAULT_OUTPUT_DIRECTORY));
+      },
+    );
   });
 });
