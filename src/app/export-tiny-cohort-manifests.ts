@@ -924,7 +924,18 @@ export async function deriveGenomicSnapshot(
 export async function deriveSlideReference(
   caseRecipe: TinyCaseExportRecipe,
 ): Promise<SlideReference> {
-  throw new Error("not implemented: deriveSlideReference");
+  const slideReferenceBase = await fetchPublicSlideReferenceBase(
+    caseRecipe.selectedFileIds.slide,
+  );
+  const viewerHandoff = buildIdcSlimViewerHandoff(caseRecipe.viewerHandoffSeed);
+  const { validateSlideReference } = await import(
+    "../contracts/case-manifest.validation"
+  );
+
+  return validateSlideReference({
+    ...slideReferenceBase,
+    viewerHandoff,
+  });
 }
 
 export async function deriveCaseManifest(
