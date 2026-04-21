@@ -701,10 +701,14 @@ export function selectMutationHighlights(
   });
 }
 
-export function selectExpressionHighlights(
+function selectNumericGeneHighlights<THighlight>(
   fileContents: string,
   genePanel: string[],
-): ExpressionHighlight[] {
+  sourceLabel: "Expression" | "Copy-number",
+  valueColumnName: "tpm_unstranded" | "copy_number",
+  missingValueLabel: "expression" | "copy-number",
+  buildHighlight: (geneSymbol: string, value: number) => THighlight,
+): THighlight[] {
   if (genePanel.length === 0) {
     return [];
   }
@@ -715,21 +719,21 @@ export function selectExpressionHighlights(
   const headerLine = lines.find((line) => !line.startsWith("#"));
 
   if (!headerLine) {
-    throw new Error("Expression source file is missing header line");
+    throw new Error(`${sourceLabel} source file is missing header line`);
   }
 
   const headerColumns = headerLine.split("\t");
   const geneNameIndex = headerColumns.indexOf("gene_name");
-  const tpmUnstrandedIndex = headerColumns.indexOf("tpm_unstranded");
+  const valueIndex = headerColumns.indexOf(valueColumnName);
 
-  if (geneNameIndex < 0 || tpmUnstrandedIndex < 0) {
+  if (geneNameIndex < 0 || valueIndex < 0) {
     throw new Error(
-      "Expression source file must include gene_name and tpm_unstranded columns",
+      `${sourceLabel} source file must include gene_name and ${valueColumnName} columns`,
     );
   }
 
   const requestedGenes = new Set(genePanel);
-  const expressionByGene = new Map<string, number>();
+  const valuesByGene = new Map<string, number>();
   let headerSeen = false;
 
   for (const line of lines) {
@@ -749,110 +753,64 @@ export function selectExpressionHighlights(
       continue;
     }
 
-    const rawTpmUnstranded = columns[tpmUnstrandedIndex]?.trim();
+    const rawValue = columns[valueIndex]?.trim();
 
-    if (!rawTpmUnstranded) {
-      throw new Error(`Malformed tpm_unstranded value for gene ${geneName}`);
+    if (!rawValue) {
+      throw new Error(`Malformed ${valueColumnName} value for gene ${geneName}`);
     }
 
-    const tpmUnstranded = Number(rawTpmUnstranded);
+    const value = Number(rawValue);
 
-    if (!Number.isFinite(tpmUnstranded) || tpmUnstranded < 0) {
-      throw new Error(`Malformed tpm_unstranded value for gene ${geneName}`);
+    if (!Number.isFinite(value) || value < 0) {
+      throw new Error(`Malformed ${valueColumnName} value for gene ${geneName}`);
     }
 
-    expressionByGene.set(geneName, tpmUnstranded);
+    valuesByGene.set(geneName, value);
   }
 
   return genePanel.map((geneSymbol) => {
-    const tpmUnstranded = expressionByGene.get(geneSymbol);
+    const value = valuesByGene.get(geneSymbol);
 
-    if (tpmUnstranded === undefined) {
-      throw new Error(`Missing expression value for gene ${geneSymbol}`);
+    if (value === undefined) {
+      throw new Error(`Missing ${missingValueLabel} value for gene ${geneSymbol}`);
     }
 
-    return {
+    return buildHighlight(geneSymbol, value);
+  });
+}
+
+export function selectExpressionHighlights(
+  fileContents: string,
+  genePanel: string[],
+): ExpressionHighlight[] {
+  return selectNumericGeneHighlights(
+    fileContents,
+    genePanel,
+    "Expression",
+    "tpm_unstranded",
+    "expression",
+    (geneSymbol, tpmUnstranded) => ({
       geneSymbol,
       tpmUnstranded,
-    };
-  });
+    }),
+  );
 }
 
 export function selectCopyNumberHighlights(
   fileContents: string,
   genePanel: string[],
 ): CopyNumberHighlight[] {
-  if (genePanel.length === 0) {
-    return [];
-  }
-
-  const lines = fileContents
-    .split(/\r?\n/)
-    .filter((line) => line.trim().length > 0);
-  const headerLine = lines.find((line) => !line.startsWith("#"));
-
-  if (!headerLine) {
-    throw new Error("Copy-number source file is missing header line");
-  }
-
-  const headerColumns = headerLine.split("\t");
-  const geneNameIndex = headerColumns.indexOf("gene_name");
-  const copyNumberIndex = headerColumns.indexOf("copy_number");
-
-  if (geneNameIndex < 0 || copyNumberIndex < 0) {
-    throw new Error(
-      "Copy-number source file must include gene_name and copy_number columns",
-    );
-  }
-
-  const requestedGenes = new Set(genePanel);
-  const copyNumberByGene = new Map<string, number>();
-  let headerSeen = false;
-
-  for (const line of lines) {
-    if (line.startsWith("#")) {
-      continue;
-    }
-
-    if (!headerSeen) {
-      headerSeen = true;
-      continue;
-    }
-
-    const columns = line.split("\t");
-    const geneName = columns[geneNameIndex];
-
-    if (!geneName || !requestedGenes.has(geneName)) {
-      continue;
-    }
-
-    const rawCopyNumber = columns[copyNumberIndex]?.trim();
-
-    if (!rawCopyNumber) {
-      throw new Error(`Malformed copy_number value for gene ${geneName}`);
-    }
-
-    const copyNumber = Number(rawCopyNumber);
-
-    if (!Number.isFinite(copyNumber) || copyNumber < 0) {
-      throw new Error(`Malformed copy_number value for gene ${geneName}`);
-    }
-
-    copyNumberByGene.set(geneName, copyNumber);
-  }
-
-  return genePanel.map((geneSymbol) => {
-    const copyNumber = copyNumberByGene.get(geneSymbol);
-
-    if (copyNumber === undefined) {
-      throw new Error(`Missing copy-number value for gene ${geneSymbol}`);
-    }
-
-    return {
+  return selectNumericGeneHighlights(
+    fileContents,
+    genePanel,
+    "Copy-number",
+    "copy_number",
+    "copy-number",
+    (geneSymbol, copyNumber) => ({
       geneSymbol,
       copyNumber,
-    };
-  });
+    }),
+  );
 }
 
 export function buildIdcSlimViewerHandoff(
