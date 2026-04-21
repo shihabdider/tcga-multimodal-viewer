@@ -2,15 +2,15 @@
 
 phase: 3
 layer: 0
-updated: 2026-04-21T18:47:02.281Z
+updated: 2026-04-21T18:48:29Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
 | coverExportTinyCohortManifestsMain | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pass | 447.8s |
-| coverBuildTinyCohortStaticAppMain | tests/build-tiny-cohort-static-app.main.test.ts | 0 | fail | 328.8s |
-| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | fail | 381.1s |
+| coverBuildTinyCohortStaticAppMain | tests/build-tiny-cohort-static-app.main.test.ts | 0 | pass | 328.8s |
+| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pass | 381.1s |
 | documentTinyBrcaSmokeTestLocalRunbook | README.md | 0 | pass | 268.1s |
 
 ## Log
@@ -29,5 +29,7 @@ updated: 2026-04-21T18:47:02.281Z
 - 14:32:05 implementer_post verification for coverTinyBrcaExportToStaticViewerThinSlice: fail
 - 14:33:11 coverExportTinyCohortManifestsMain: pass (447.8s, $0.6983)
 - 14:33:12 implementer_post verification for coverExportTinyCohortManifestsMain: pass
+- 14:34:01 manual repo-wide bun test after parallel implementer convergence: pass
 - 14:47:01 abstractor pass
 - 14:47:02 abstractor_post verification: pass
+- 14:48:20 final_preverify verification: pass
