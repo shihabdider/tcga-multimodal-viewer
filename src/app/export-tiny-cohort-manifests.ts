@@ -1162,7 +1162,29 @@ export async function writeManifestJsonFiles(
 export async function exportTinyCohortManifests(
   paths: TinyCohortExportPaths,
 ): Promise<TinyCohortManifestExport> {
-  throw new Error("not implemented: exportTinyCohortManifests");
+  const recipe = await loadTinyCohortExportRecipeFromFile(paths.recipePath);
+  const caseManifests = await Promise.all(
+    recipe.cases.map((caseRecipe) =>
+      deriveCaseManifest(
+        caseRecipe,
+        recipe.expressionGenePanel,
+        recipe.copyNumberGenePanel,
+      ),
+    ),
+  );
+  const cohortManifest = deriveCohortManifest(recipe, caseManifests);
+  const files = await writeManifestJsonFiles(
+    paths.outputDirectory,
+    cohortManifest,
+    caseManifests,
+  );
+
+  return {
+    outputDirectory: paths.outputDirectory,
+    cohortManifest,
+    caseManifests,
+    files,
+  };
 }
 
 export async function main(

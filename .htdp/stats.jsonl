@@ -53,3 +53,4 @@
 {"ts":"2026-04-21T17:42:00.067Z","agent":"implementer","wish":"writeManifestJsonFiles","layer":2,"status":"pass","turns":23,"input":48898,"output":14098,"cacheRead":734080,"cost":0.5172,"duration":307.1}
 {"ts":"2026-04-21T17:47:31.093Z","agent":"implementer","wish":"validateTinyCohortExportRecipe","layer":1,"status":"pass","turns":28,"input":68450,"output":13932,"cacheRead":848640,"cost":0.5923,"duration":321.7}
 {"ts":"2026-04-21T17:53:34.913Z","agent":"implementer","wish":"deriveCaseManifest","layer":1,"status":"pass","turns":25,"input":62622,"output":14910,"cacheRead":793856,"cost":0.5787,"duration":355.7}
+{"ts":"2026-04-21T17:59:10.657Z","agent":"implementer","wish":"exportTinyCohortManifests","layer":0,"status":"pass","turns":24,"input":44367,"output":14409,"cacheRead":769536,"cost":0.5194,"duration":326.5}
