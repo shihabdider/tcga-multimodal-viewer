@@ -5,6 +5,7 @@ import type {
   ExpressionHighlight,
   GenomicSnapshot,
   MutationHighlight,
+  PublicViewerHandoff,
   SlideReference,
   SourceFileReference,
 } from "./case-manifest";
@@ -271,6 +272,41 @@ export function validateGenomicSnapshot(value: unknown): GenomicSnapshot {
   };
 }
 
+export function validatePublicViewerHandoff(
+  value: unknown,
+  publicPageUrl: string,
+): PublicViewerHandoff {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("PublicViewerHandoff must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (candidate.kind !== "external") {
+    throw new Error('PublicViewerHandoff.kind must be "external"');
+  }
+
+  if (candidate.provider !== "gdc") {
+    throw new Error('PublicViewerHandoff.provider must be "gdc"');
+  }
+
+  if (typeof candidate.url !== "string" || candidate.url.trim().length === 0) {
+    throw new Error("PublicViewerHandoff.url must be a non-empty string");
+  }
+
+  if (candidate.url !== publicPageUrl) {
+    throw new Error(
+      "PublicViewerHandoff.url must match SlideReference.publicPageUrl",
+    );
+  }
+
+  return {
+    kind: "external",
+    provider: "gdc",
+    url: candidate.url,
+  };
+}
+
 export function validateSlideReference(value: unknown): SlideReference {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     throw new Error("SlideReference must be an object");
@@ -280,7 +316,14 @@ export function validateSlideReference(value: unknown): SlideReference {
   const uuidPattern =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  const requireNonEmptyString = (field: keyof SlideReference): string => {
+  const requireNonEmptyString = (
+    field:
+      | "fileName"
+      | "slideSubmitterId"
+      | "sampleType"
+      | "publicPageUrl"
+      | "publicDownloadUrl",
+  ): string => {
     const fieldValue = candidate[field];
 
     if (typeof fieldValue !== "string" || fieldValue.trim().length === 0) {
@@ -340,6 +383,11 @@ export function validateSlideReference(value: unknown): SlideReference {
     );
   }
 
+  const viewerHandoff = validatePublicViewerHandoff(
+    candidate.viewerHandoff,
+    publicPageUrl,
+  );
+
   return {
     source,
     access,
@@ -351,6 +399,7 @@ export function validateSlideReference(value: unknown): SlideReference {
     experimentalStrategy,
     publicPageUrl,
     publicDownloadUrl,
+    viewerHandoff,
   };
 }
 

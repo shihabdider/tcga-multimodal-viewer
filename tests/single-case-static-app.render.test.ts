@@ -88,6 +88,9 @@ describe("renderExpressionHighlightsSection", () => {
     expect(rendered).toContain("27.7342");
     expect(rendered).toContain("KRT5");
     expect(rendered).toContain("2452.7661");
+    expect(rendered).toContain(
+      '</span>: <span class="expression-value">27.7342</span>',
+    );
     expect(rendered).not.toContain("No expression highlights available.");
   });
 
@@ -100,7 +103,7 @@ describe("renderExpressionHighlightsSection", () => {
     ]);
 
     expect(rendered).toContain("PGR");
-    expect(rendered).toContain(">0<");
+    expect(rendered).toContain('</span>: <span class="expression-value">0</span>');
   });
 
   test("renders a readable empty state when no expression highlights are present", () => {

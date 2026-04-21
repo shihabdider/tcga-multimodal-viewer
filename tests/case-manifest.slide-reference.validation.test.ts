@@ -30,6 +30,49 @@ describe("validateSlideReference", () => {
     });
   });
 
+  test("accepts the bounded external GDC viewer handoff contract", () => {
+    expect(validateSlideReference(validSlideReference)).toMatchObject({
+      viewerHandoff: validSlideReference.viewerHandoff,
+    });
+  });
+
+  test("rejects viewer handoff values outside the bounded external GDC contract", () => {
+    expect(() =>
+      validateSlideReference(
+        makeSlideReference({
+          viewerHandoff: {
+            ...validSlideReference.viewerHandoff,
+            kind: "embedded",
+          },
+        }),
+      ),
+    ).toThrow(/PublicViewerHandoff\.kind must be "external"/);
+
+    expect(() =>
+      validateSlideReference(
+        makeSlideReference({
+          viewerHandoff: {
+            ...validSlideReference.viewerHandoff,
+            provider: "idc",
+          },
+        }),
+      ),
+    ).toThrow(/PublicViewerHandoff\.provider must be "gdc"/);
+
+    expect(() =>
+      validateSlideReference(
+        makeSlideReference({
+          viewerHandoff: {
+            ...validSlideReference.viewerHandoff,
+            url: validSlideReference.publicDownloadUrl,
+          },
+        }),
+      ),
+    ).toThrow(
+      /PublicViewerHandoff\.url must match SlideReference\.publicPageUrl/,
+    );
+  });
+
   test("rejects values that are not plain objects", () => {
     for (const invalidValue of [null, [], "slide", 42]) {
       expect(() => validateSlideReference(invalidValue)).toThrow(

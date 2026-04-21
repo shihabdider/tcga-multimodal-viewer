@@ -5,6 +5,8 @@ import type {
   ExpressionHighlight,
   GenomicSnapshot,
   MutationHighlight,
+  PublicViewerHandoff,
+  SlideReference,
 } from "../contracts/case-manifest";
 
 function escapeHtml(value: string): string {
@@ -21,6 +23,7 @@ export function renderCasePage(manifest: CaseManifest): string {
   const renderedGenomicSnapshotSection = renderGenomicSnapshotSection(
     manifest.genomicSnapshot,
   );
+  const renderedSlideListSection = renderSlideListSection(manifest.slides);
   const pageTitle = `${manifest.case.caseId} | TCGA multimodal viewer`;
 
   return [
@@ -37,6 +40,7 @@ export function renderCasePage(manifest: CaseManifest): string {
     `    <h1>${escapeHtml(manifest.case.caseId)}</h1>`,
     renderedCaseMetadataSection,
     renderedGenomicSnapshotSection,
+    renderedSlideListSection,
     "  </main>",
     "</body>",
     "</html>",
@@ -99,6 +103,20 @@ export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string 
   ].join("\n");
 }
 
+export function renderSlideListSection(slides: SlideReference[]): string {
+  for (const slide of slides) {
+    renderSlideViewerHandoff(slide.viewerHandoff);
+  }
+
+  return "";
+}
+
+export function renderSlideViewerHandoff(
+  _handoff: PublicViewerHandoff,
+): string {
+  return "";
+}
+
 export function renderMutationHighlightsSection(
   highlights: MutationHighlight[],
 ): string {
@@ -149,7 +167,7 @@ export function renderExpressionHighlightsSection(
       : `<ul class="expression-highlight-list">${highlights
           .map(
             (highlight) =>
-              `<li><span class="gene-symbol">${escapeHtml(highlight.geneSymbol)}</span><span class="expression-value">${String(highlight.tpmUnstranded)}</span></li>`,
+              `<li><span class="gene-symbol">${escapeHtml(highlight.geneSymbol)}</span>: <span class="expression-value">${String(highlight.tpmUnstranded)}</span></li>`,
           )
           .join("")}</ul>`;
 

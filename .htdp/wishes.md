@@ -1,63 +1,43 @@
 ## Wish List
 
-### Layer 3 (implement first)
-- `renderCaseMetadataSection(caseMetadata: CaseMetadata): string` in `src/rendering/case-page.ts`
-  Purpose: render the case summary block from `CaseMetadata`, including TCGA identifiers and diagnosis context for the single-case page
+### Layer 1 (implement first)
+- `renderSlideViewerHandoff(handoff: PublicViewerHandoff): string` in `src/rendering/case-page.ts`
+  Purpose: render the manifest-provided external public slide handoff as a clickable link target for one slide
   Depends on: none
-- `renderMutationHighlightsSection(highlights: MutationHighlight[]): string` in `src/rendering/case-page.ts`
-  Purpose: render the bounded somatic-mutation highlight collection, including a readable empty state when no mutations are present
-  Depends on: none
-- `renderExpressionHighlightsSection(metric: GenomicSnapshot["expressionMetric"], highlights: ExpressionHighlight[]): string` in `src/rendering/case-page.ts`
-  Purpose: render the bounded expression highlight collection with the manifest's expression metric label and values, including an empty state
-  Depends on: none
-- `renderCopyNumberHighlightsSection(highlights: CopyNumberHighlight[]): string` in `src/rendering/case-page.ts`
-  Purpose: render the bounded gene-level copy-number highlight collection, including an empty state when the collection is empty
-  Depends on: none
-- `renderSingleCaseStylesheet(): string` in `src/rendering/case-page.ts`
-  Purpose: return the minimal CSS needed to keep the emitted single-case page readable as a local static artifact
-  Depends on: none
-- `loadCaseManifestFromFile(manifestPath: string): Promise<CaseManifest>` in `src/app/build-single-case-static-app.ts`
-  Purpose: read the checked-in manifest JSON from disk and turn it into a validated `CaseManifest` for the renderer pipeline
-  Depends on: none
-- `writeStaticAssets(outputDirectory: string, assets: StaticAsset[]): Promise<void>` in `src/app/build-single-case-static-app.ts`
-  Purpose: persist the generated HTML and companion assets into the requested local output directory
-  Depends on: none
-
-### Layer 2
-- `renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string` in `src/rendering/case-page.ts`
-  Purpose: compose the genomic snapshot block from the bounded mutation, expression, and copy-number collections in the manifest
-  Depends on: renderMutationHighlightsSection, renderExpressionHighlightsSection, renderCopyNumberHighlightsSection
-
-### Layer 1
-- `renderCasePage(manifest: CaseManifest): string` in `src/rendering/case-page.ts`
-  Purpose: assemble the full HTML document for one manifest-driven case page using case metadata and the genomic snapshot section
-  Depends on: renderCaseMetadataSection, renderGenomicSnapshotSection
-- `buildSingleCaseStaticApp(paths: SingleCaseBuildPaths): Promise<SingleCaseStaticBuild>` in `src/app/build-single-case-static-app.ts`
-  Purpose: load the checked-in manifest, render the single-case page and minimal companion assets, and emit the local static build output
-  Depends on: loadCaseManifestFromFile, renderCasePage, renderSingleCaseStylesheet, writeStaticAssets
 
 ### Layer 0 (implement last)
-- `main(argv: string[] = process.argv.slice(2)): Promise<void>` in `src/app/build-single-case-static-app.ts`
-  Purpose: provide the tiny local build entry path that applies defaults and invokes the single-case static app build
-  Depends on: buildSingleCaseStaticApp
+- `renderSlideListSection(slides: SlideReference[]): string` in `src/rendering/case-page.ts`
+  Purpose: render the case slide list section, including checked-in slide metadata, the external handoff for each slide, and a readable empty state when no slides are present
+  Depends on: renderSlideViewerHandoff
 
 ## Data Definitions Created/Modified
-- `src/contracts/case-manifest.ts`: kept the existing `CaseManifest` contract unchanged as the source input for the new renderer/build pipeline
-- `src/app/build-single-case-static-app.ts`: added `StaticAsset`, `SingleCaseBuildPaths`, `SingleCaseStaticBuild`, `DEFAULT_SEED_MANIFEST_PATH`, and `DEFAULT_OUTPUT_DIRECTORY` to model the emitted local artifact and its entry defaults
+- `src/contracts/case-manifest.ts`: added `PublicViewerHandoff` and `viewerHandoff: PublicViewerHandoff` to `SlideReference`
+- `manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json`: added `slides[0].viewerHandoff` bound to the checked-in GDC public file page
+- `src/contracts/case-manifest.validation.ts`: added `validatePublicViewerHandoff(value: unknown, publicPageUrl: string): PublicViewerHandoff` and threaded it through `validateSlideReference`
+- `src/rendering/case-page.ts`: added `renderSlideListSection` / `renderSlideViewerHandoff` stubs and threaded the slide section through `renderCasePage`
 
 ## Assertion Changes Flagged
-- `tests/single-case-static-app.render.test.ts:18-29`: new skipped `expect(...).toContain(...)` assertions pin `renderCasePage(...)` to manifest-driven case metadata and genomic highlight values
-- `tests/single-case-static-app.render.test.ts:35-44`: new skipped `expect(...).toContain(...)` assertions pin `renderGenomicSnapshotSection(...)` to manifest-driven expression, mutation, and copy-number values
-- `tests/single-case-static-app.render.test.ts:55-66`: new skipped `expect(...).toBe(...)`, `toEqual(...)`, and `toContain(...)` assertions pin `buildSingleCaseStaticApp(...)` to the checked-in manifest and `index.html`/`styles.css` outputs
+```text
+  + tests/case-manifest.slide-reference.validation.test.ts:34:     expect(validateSlideReference(validSlideReference)).toMatchObject({
+  + tests/case-manifest.slide-reference.validation.test.ts:40:     expect(() =>
+  + tests/case-manifest.slide-reference.validation.test.ts:49:     ).toThrow(/PublicViewerHandoff\.kind must be "external"/);
+  + tests/case-manifest.slide-reference.validation.test.ts:51:     expect(() =>
+  + tests/case-manifest.slide-reference.validation.test.ts:60:     ).toThrow(/PublicViewerHandoff\.provider must be "gdc"/);
+  + tests/case-manifest.slide-reference.validation.test.ts:62:     expect(() =>
+  + tests/case-manifest.slide-reference.validation.test.ts:71:     ).toThrow(
+  + tests/case-page.render.test.ts:55:     expect(rendered).toContain(manifest.slides[0].slideSubmitterId);
+  + tests/case-page.render.test.ts:56:     expect(rendered).toContain(manifest.slides[0].viewerHandoff.url);
+
+9 assertion change(s) flagged
+```
+- Manually noted because `diff-check` does not report untracked files: `tests/slide-list-section.render.test.ts:13-14`, `22-26`, and `32-33` add new assertions for manifest-driven handoff and slide-list rendering.
 
 ## Assumptions / Interpretations
-- I modeled the emitted artifact as `StaticAsset[]` inside `SingleCaseStaticBuild` because the requirement called for a static local artifact plus minimal companion assets, and this keeps the build output explicit without changing `CaseManifest`.
-- I interpreted “minimal companion assets” as a single external stylesheet (`styles.css`) alongside `index.html`, rather than inline-only styles or multiple assets.
-- I interpreted the “tiny build/entry path” as a Bun-friendly module with `main(argv)` plus default constants for the checked-in manifest path and output directory.
-- I treated slide rendering as out of scope for this iteration, so there is no slide-list renderer wish even though `CaseManifest` still carries `slides`.
-- I added skipped tests with concrete assertions to pin the desired manifest-driven behavior while keeping the test verifier green during the stubber phase.
+- I modeled the new handoff as `PublicViewerHandoff = { kind: "external"; provider: "gdc"; url: string }` and bound `url` to `SlideReference.publicPageUrl`. Alternative: collapse this into `publicPageUrl` directly or point the handoff at the download URL instead.
+- I kept `publicPageUrl` and `publicDownloadUrl` on `SlideReference` and extended the type with `viewerHandoff` rather than replacing the existing fields, because the task said to extend the current open GDC slide reference.
+- I kept per-slide rendering inside `renderSlideListSection` plus a separate `renderSlideViewerHandoff` helper instead of introducing a third `renderSlideListItem` function, to keep the initial wish graph minimal.
 
 ## Notes
-- Verification: `bun test` passes with `53 pass` and `3 skip`; `htdp.json` does not define a compile verifier for this target, so testing was the only available symbolic check.
-- New stub modules: `src/rendering/case-page.ts` and `src/app/build-single-case-static-app.ts`.
-- Added `tests/single-case-static-app.render.test.ts` as a rendering/build contract scaffold; `diff-check` returned exit 0 because the file is newly added, so the new assertion lines were flagged manually above.
+- `bun test` now reports `85 pass / 4 fail`. The failing tests are `tests/slide-list-section.render.test.ts` (3) and `tests/case-page.render.test.ts` (1), which is the expected stub frontier for the new slide UI/handoff behavior.
+- The structural contract work is in place: the checked-in manifest, `validateSlideReference`, and `validateCaseManifest` all now accept and preserve the bounded `viewerHandoff` block.
+- The working tree already had unrelated changes outside this task (`.htdp/*`, `AGENTS.md`, and `tests/single-case-static-app.render.test.ts`).

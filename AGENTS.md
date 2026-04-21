@@ -26,6 +26,10 @@
 ## Checkpoint preference
 When finishing a task or hitting a real decision point, keep checkpoints concise and mention what was actually verified.
 
+## UX review
+- For frontend or UX review, use the `web-browser` skill.
+- Use its isolated Playwright Chromium instance rather than the user's running Chrome so review does not interfere with existing browser windows or profile state.
+
 ## HtDP workflow
 - htdp.mode: autonomous
 - htdp.transparent: true

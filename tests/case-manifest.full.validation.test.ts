@@ -36,6 +36,10 @@ describe("validateCaseManifest", () => {
         slides: validManifest.slides.map((slide) => ({
           ...slide,
           viewer: "external",
+          viewerHandoff: {
+            ...slide.viewerHandoff,
+            note: "public",
+          },
         })),
       }),
     ).toEqual(validManifest);

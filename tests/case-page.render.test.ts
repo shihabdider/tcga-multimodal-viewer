@@ -52,6 +52,8 @@ describe("renderCasePage", () => {
     expect(rendered).toContain(
       manifest.genomicSnapshot.mutationHighlights[0].geneSymbol,
     );
+    expect(rendered).toContain(manifest.slides[0].slideSubmitterId);
+    expect(rendered).toContain(manifest.slides[0].viewerHandoff.url);
 
     expect(rendered.indexOf(renderedCaseMetadata)).toBeLessThan(
       rendered.indexOf(renderedGenomicSnapshot),

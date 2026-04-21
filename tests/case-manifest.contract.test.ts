@@ -21,6 +21,11 @@ describe("checked-in CaseManifest artifact", () => {
       experimentalStrategy: "Diagnostic Slide",
       fileId: "e5806a73-54c4-43d1-a44b-db5f43c8e832",
       slideSubmitterId: "TCGA-E9-A5FL-01Z-00-DX1",
+      viewerHandoff: {
+        kind: "external",
+        provider: "gdc",
+        url: manifest.slides[0].publicPageUrl,
+      },
     });
   });
 

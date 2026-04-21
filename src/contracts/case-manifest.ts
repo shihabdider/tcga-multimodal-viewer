@@ -49,6 +49,12 @@ export interface GenomicSnapshot {
   copyNumberHighlights: CopyNumberHighlight[];
 }
 
+export interface PublicViewerHandoff {
+  kind: "external";
+  provider: "gdc";
+  url: string;
+}
+
 export interface SlideReference {
   source: "gdc";
   access: "open";
@@ -60,6 +66,7 @@ export interface SlideReference {
   experimentalStrategy: "Diagnostic Slide" | "Tissue Slide";
   publicPageUrl: string;
   publicDownloadUrl: string;
+  viewerHandoff: PublicViewerHandoff;
 }
 
 export interface CaseManifest {
