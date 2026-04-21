@@ -131,7 +131,100 @@ export function deriveCohortManifest(
 export function serializeNormalizedManifestJson(
   manifest: CaseManifest | CohortManifest,
 ): string {
-  throw new Error("not implemented: serializeNormalizedManifestJson");
+  const normalizeSourceFileReference = (
+    reference: SourceFileReference,
+  ): SourceFileReference => ({
+    fileId: reference.fileId,
+    fileName: reference.fileName,
+    dataType: reference.dataType,
+    workflow: reference.workflow,
+  });
+
+  if ("case" in manifest) {
+    return `${JSON.stringify(
+      {
+        schemaVersion: manifest.schemaVersion,
+        case: {
+          caseId: manifest.case.caseId,
+          gdcCaseId: manifest.case.gdcCaseId,
+          projectId: manifest.case.projectId,
+          primarySite: manifest.case.primarySite,
+          diseaseType: manifest.case.diseaseType,
+          primaryDiagnosis: manifest.case.primaryDiagnosis,
+          gender: manifest.case.gender,
+          tumorSampleId: manifest.case.tumorSampleId,
+        },
+        genomicSnapshot: {
+          sourceFiles: {
+            maskedSomaticMutation: normalizeSourceFileReference(
+              manifest.genomicSnapshot.sourceFiles.maskedSomaticMutation,
+            ),
+            geneExpression: normalizeSourceFileReference(
+              manifest.genomicSnapshot.sourceFiles.geneExpression,
+            ),
+            geneLevelCopyNumber: normalizeSourceFileReference(
+              manifest.genomicSnapshot.sourceFiles.geneLevelCopyNumber,
+            ),
+          },
+          mutationHighlights: manifest.genomicSnapshot.mutationHighlights.map(
+            (highlight) => ({
+              geneSymbol: highlight.geneSymbol,
+              proteinChange: highlight.proteinChange,
+              variantClassification: highlight.variantClassification,
+              impact: highlight.impact,
+            }),
+          ),
+          expressionMetric: manifest.genomicSnapshot.expressionMetric,
+          expressionHighlights: manifest.genomicSnapshot.expressionHighlights.map(
+            (highlight) => ({
+              geneSymbol: highlight.geneSymbol,
+              tpmUnstranded: highlight.tpmUnstranded,
+            }),
+          ),
+          copyNumberHighlights: manifest.genomicSnapshot.copyNumberHighlights.map(
+            (highlight) => ({
+              geneSymbol: highlight.geneSymbol,
+              copyNumber: highlight.copyNumber,
+            }),
+          ),
+        },
+        slides: manifest.slides.map((slide) => ({
+          source: slide.source,
+          access: slide.access,
+          fileId: slide.fileId,
+          fileName: slide.fileName,
+          slideSubmitterId: slide.slideSubmitterId,
+          slideId: slide.slideId,
+          sampleType: slide.sampleType,
+          experimentalStrategy: slide.experimentalStrategy,
+          publicPageUrl: slide.publicPageUrl,
+          publicDownloadUrl: slide.publicDownloadUrl,
+          viewerHandoff: {
+            kind: slide.viewerHandoff.kind,
+            provider: slide.viewerHandoff.provider,
+            studyInstanceUid: slide.viewerHandoff.studyInstanceUid,
+            seriesInstanceUid: slide.viewerHandoff.seriesInstanceUid,
+            url: slide.viewerHandoff.url,
+          },
+        })),
+      },
+      null,
+      2,
+    )}\n`;
+  }
+
+  return `${JSON.stringify(
+    {
+      schemaVersion: manifest.schemaVersion,
+      cohortId: manifest.cohortId,
+      projectId: manifest.projectId,
+      title: manifest.title,
+      description: manifest.description,
+      caseManifestPaths: [...manifest.caseManifestPaths],
+    },
+    null,
+    2,
+  )}\n`;
 }
 
 export async function writeManifestJsonFiles(
