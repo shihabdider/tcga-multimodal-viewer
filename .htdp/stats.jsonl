@@ -58,3 +58,6 @@
 {"ts":"2026-04-21T18:06:00.619Z","agent":"implementer","wish":null,"layer":null,"status":"pass","turns":11,"input":19733,"output":3760,"cacheRead":151808,"cost":0.1437,"duration":90.9}
 {"ts":"2026-04-21T18:25:11.821Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":26,"input":57497,"output":17894,"cacheRead":988672,"cost":0.6593,"duration":429.1}
 {"ts":"2026-04-21T18:30:12.921Z","agent":"implementer","wish":"documentTinyBrcaSmokeTestLocalRunbook","layer":0,"status":"pass","turns":19,"input":40332,"output":11062,"cacheRead":528256,"cost":0.3988,"duration":268.1}
+{"ts":"2026-04-21T18:31:13.422Z","agent":"implementer","wish":"coverBuildTinyCohortStaticAppMain","layer":0,"status":"fail","turns":18,"input":57835,"output":16103,"cacheRead":424320,"cost":0.4922,"duration":328.8}
+{"ts":"2026-04-21T18:32:05.837Z","agent":"implementer","wish":"coverTinyBrcaExportToStaticViewerThinSlice","layer":0,"status":"fail","turns":32,"input":135302,"output":14609,"cacheRead":992896,"cost":0.8056,"duration":381.1}
+{"ts":"2026-04-21T18:33:12.221Z","agent":"implementer","wish":"coverExportTinyCohortManifestsMain","layer":0,"status":"pass","turns":29,"input":52723,"output":19220,"cacheRead":1112576,"cost":0.6983,"duration":447.8}
