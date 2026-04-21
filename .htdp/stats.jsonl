@@ -27,3 +27,4 @@
 {"ts":"2026-04-20T21:25:57.386Z","agent":"implementer","wish":null,"layer":null,"status":"pass","turns":18,"input":26448,"output":8609,"cacheRead":395392,"cost":0.2941,"duration":194}
 {"ts":"2026-04-20T21:31:15.044Z","agent":"implementer","wish":null,"layer":null,"status":"pass","turns":16,"input":31961,"output":3258,"cacheRead":293120,"cost":0.2021,"duration":102.4}
 {"ts":"2026-04-21T14:23:01.501Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":35,"input":73708,"output":29543,"cacheRead":1656960,"cost":1.0417,"duration":657.8}
+{"ts":"2026-04-21T14:31:40.664Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":21,"input":52545,"output":17087,"cacheRead":788224,"cost":0.5847,"duration":396.6}

@@ -274,35 +274,57 @@ export function validateGenomicSnapshot(value: unknown): GenomicSnapshot {
 
 export function validatePublicViewerHandoff(
   value: unknown,
-  publicPageUrl: string,
 ): PublicViewerHandoff {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     throw new Error("PublicViewerHandoff must be an object");
   }
 
   const candidate = value as Record<string, unknown>;
+  const dicomUidPattern = /^\d+(?:\.\d+)*$/;
 
   if (candidate.kind !== "external") {
     throw new Error('PublicViewerHandoff.kind must be "external"');
   }
 
-  if (candidate.provider !== "gdc") {
-    throw new Error('PublicViewerHandoff.provider must be "gdc"');
+  if (candidate.provider !== "idc-slim") {
+    throw new Error('PublicViewerHandoff.provider must be "idc-slim"');
+  }
+
+  if (
+    typeof candidate.studyInstanceUid !== "string" ||
+    !dicomUidPattern.test(candidate.studyInstanceUid)
+  ) {
+    throw new Error(
+      "PublicViewerHandoff.studyInstanceUid must be a DICOM UID string",
+    );
+  }
+
+  if (
+    typeof candidate.seriesInstanceUid !== "string" ||
+    !dicomUidPattern.test(candidate.seriesInstanceUid)
+  ) {
+    throw new Error(
+      "PublicViewerHandoff.seriesInstanceUid must be a DICOM UID string",
+    );
   }
 
   if (typeof candidate.url !== "string" || candidate.url.trim().length === 0) {
     throw new Error("PublicViewerHandoff.url must be a non-empty string");
   }
 
-  if (candidate.url !== publicPageUrl) {
+  const expectedSlimUrl = `https://viewer.imaging.datacommons.cancer.gov/slim/studies/${candidate.studyInstanceUid}/series/${candidate.seriesInstanceUid}`;
+
+  if (candidate.url !== expectedSlimUrl) {
     throw new Error(
-      "PublicViewerHandoff.url must match SlideReference.publicPageUrl",
+      "PublicViewerHandoff.url must match the IDC Slim URL derived from studyInstanceUid and seriesInstanceUid",
     );
   }
 
   return {
     kind: "external",
-    provider: "gdc",
+    provider: "idc-slim",
+    studyInstanceUid: candidate.studyInstanceUid,
+    seriesInstanceUid: candidate.seriesInstanceUid,
     url: candidate.url,
   };
 }
@@ -383,10 +405,7 @@ export function validateSlideReference(value: unknown): SlideReference {
     );
   }
 
-  const viewerHandoff = validatePublicViewerHandoff(
-    candidate.viewerHandoff,
-    publicPageUrl,
-  );
+  const viewerHandoff = validatePublicViewerHandoff(candidate.viewerHandoff);
 
   return {
     source,

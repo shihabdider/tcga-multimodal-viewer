@@ -51,7 +51,9 @@ export interface GenomicSnapshot {
 
 export interface PublicViewerHandoff {
   kind: "external";
-  provider: "gdc";
+  provider: "idc-slim";
+  studyInstanceUid: string;
+  seriesInstanceUid: string;
   url: string;
 }
 

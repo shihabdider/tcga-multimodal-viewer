@@ -6,6 +6,15 @@ import { validateSlideReference } from "../src/contracts/case-manifest.validatio
 
 const validSlideReference: SlideReference = manifest.slides[0];
 
+function buildExpectedSlimViewerUrl(
+  handoff: Pick<
+    SlideReference["viewerHandoff"],
+    "studyInstanceUid" | "seriesInstanceUid"
+  >,
+): string {
+  return `https://viewer.imaging.datacommons.cancer.gov/slim/studies/${handoff.studyInstanceUid}/series/${handoff.seriesInstanceUid}`;
+}
+
 function makeSlideReference(
   overrides: Partial<Record<keyof SlideReference, unknown>> = {},
 ): unknown {
@@ -30,13 +39,18 @@ describe("validateSlideReference", () => {
     });
   });
 
-  test("accepts the bounded external GDC viewer handoff contract", () => {
-    expect(validateSlideReference(validSlideReference)).toMatchObject({
+  test("accepts the bounded external IDC Slim viewer handoff contract", () => {
+    const validatedSlideReference = validateSlideReference(validSlideReference);
+
+    expect(validatedSlideReference).toMatchObject({
       viewerHandoff: validSlideReference.viewerHandoff,
     });
+    expect(validatedSlideReference.viewerHandoff.url).toBe(
+      buildExpectedSlimViewerUrl(validatedSlideReference.viewerHandoff),
+    );
   });
 
-  test("rejects viewer handoff values outside the bounded external GDC contract", () => {
+  test("rejects viewer handoff values outside the bounded external IDC Slim contract", () => {
     expect(() =>
       validateSlideReference(
         makeSlideReference({
@@ -57,19 +71,41 @@ describe("validateSlideReference", () => {
           },
         }),
       ),
-    ).toThrow(/PublicViewerHandoff\.provider must be "gdc"/);
+    ).toThrow(/PublicViewerHandoff\.provider must be "idc-slim"/);
 
     expect(() =>
       validateSlideReference(
         makeSlideReference({
           viewerHandoff: {
             ...validSlideReference.viewerHandoff,
-            url: validSlideReference.publicDownloadUrl,
+            studyInstanceUid: "not-a-dicom-uid",
+          },
+        }),
+      ),
+    ).toThrow(/PublicViewerHandoff\.studyInstanceUid must be a DICOM UID string/);
+
+    expect(() =>
+      validateSlideReference(
+        makeSlideReference({
+          viewerHandoff: {
+            ...validSlideReference.viewerHandoff,
+            seriesInstanceUid: "bad series uid",
+          },
+        }),
+      ),
+    ).toThrow(/PublicViewerHandoff\.seriesInstanceUid must be a DICOM UID string/);
+
+    expect(() =>
+      validateSlideReference(
+        makeSlideReference({
+          viewerHandoff: {
+            ...validSlideReference.viewerHandoff,
+            url: validSlideReference.publicPageUrl,
           },
         }),
       ),
     ).toThrow(
-      /PublicViewerHandoff\.url must match SlideReference\.publicPageUrl/,
+      /PublicViewerHandoff\.url must match the IDC Slim URL derived from studyInstanceUid and seriesInstanceUid/,
     );
   });
 

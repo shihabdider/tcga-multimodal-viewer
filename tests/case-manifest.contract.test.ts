@@ -4,6 +4,8 @@ import manifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
 
 describe("checked-in CaseManifest artifact", () => {
   test("pins the seed TCGA-BRCA case and diagnostic slide", () => {
+    const viewerHandoff = manifest.slides[0].viewerHandoff;
+
     expect(Object.keys(manifest).sort()).toEqual([
       "case",
       "genomicSnapshot",
@@ -23,10 +25,15 @@ describe("checked-in CaseManifest artifact", () => {
       slideSubmitterId: "TCGA-E9-A5FL-01Z-00-DX1",
       viewerHandoff: {
         kind: "external",
-        provider: "gdc",
-        url: manifest.slides[0].publicPageUrl,
+        provider: "idc-slim",
+        studyInstanceUid: "2.25.75985052631324791295077969115453253333",
+        seriesInstanceUid:
+          "1.3.6.1.4.1.5962.99.1.1340365369.982525121.1637722937913.2.0",
       },
     });
+    expect(viewerHandoff.url).toBe(
+      `https://viewer.imaging.datacommons.cancer.gov/slim/studies/${viewerHandoff.studyInstanceUid}/series/${viewerHandoff.seriesInstanceUid}`,
+    );
   });
 
   test("keeps the genomic snapshot bounded and tied to open GDC files", () => {
