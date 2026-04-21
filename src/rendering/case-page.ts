@@ -18,6 +18,28 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
+type DefinitionListField = {
+  label: string;
+  value: string;
+};
+
+function renderDefinitionListItems(
+  fields: DefinitionListField[],
+  itemClassName: string,
+): string {
+  return fields
+    .map(
+      ({ label, value }) =>
+        [
+          `<div class="${itemClassName}">`,
+          `<dt>${escapeHtml(label)}</dt>`,
+          `<dd>${escapeHtml(value)}</dd>`,
+          "</div>",
+        ].join(""),
+    )
+    .join("");
+}
+
 export function renderCasePage(manifest: CaseManifest): string {
   const renderedCaseMetadataSection = renderCaseMetadataSection(manifest.case);
   const renderedGenomicSnapshotSection = renderGenomicSnapshotSection(
@@ -48,7 +70,7 @@ export function renderCasePage(manifest: CaseManifest): string {
 }
 
 export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
-  const summaryFields: Array<{ label: string; value: string }> = [
+  const summaryFields: DefinitionListField[] = [
     { label: "Case ID", value: caseMetadata.caseId },
     { label: "GDC Case ID", value: caseMetadata.gdcCaseId },
     { label: "Project", value: caseMetadata.projectId },
@@ -59,17 +81,10 @@ export function renderCaseMetadataSection(caseMetadata: CaseMetadata): string {
     { label: "Tumor sample ID", value: caseMetadata.tumorSampleId },
   ];
 
-  const renderedFields = summaryFields
-    .map(
-      ({ label, value }) =>
-        [
-          '    <div class="case-summary__item">',
-          `      <dt>${label}</dt>`,
-          `      <dd>${escapeHtml(value)}</dd>`,
-          "    </div>",
-        ].join("\n"),
-    )
-    .join("\n");
+  const renderedFields = renderDefinitionListItems(
+    summaryFields,
+    "case-summary__item",
+  );
 
   return [
     '<section class="case-summary" aria-labelledby="case-summary-heading">',
@@ -115,7 +130,7 @@ export function renderSlideListSection(slides: SlideReference[]): string {
 
   const renderedSlides = slides
     .map((slide) => {
-      const metadataFields: Array<{ label: string; value: string }> = [
+      const metadataFields: DefinitionListField[] = [
         { label: "Slide submitter ID", value: slide.slideSubmitterId },
         { label: "File name", value: slide.fileName },
         { label: "Sample type", value: slide.sampleType },
@@ -129,17 +144,10 @@ export function renderSlideListSection(slides: SlideReference[]): string {
         { label: "Access", value: slide.access },
       ];
 
-      const renderedMetadata = metadataFields
-        .map(
-          ({ label, value }) =>
-            [
-              '          <div class="slide-list__metadata-item">',
-              `            <dt>${label}</dt>`,
-              `            <dd>${escapeHtml(value)}</dd>`,
-              "          </div>",
-            ].join("\n"),
-        )
-        .join("\n");
+      const renderedMetadata = renderDefinitionListItems(
+        metadataFields,
+        "slide-list__metadata-item",
+      );
 
       return [
         '    <li class="slide-list__item">',
