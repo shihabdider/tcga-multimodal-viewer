@@ -173,9 +173,7 @@ export function renderSlideListSection(slides: SlideReference[]): string {
 export function renderSlideViewerHandoff(
   handoff: PublicViewerHandoff,
 ): string {
-  const providerLabel = {
-    "idc-slim": "IDC Slim viewer",
-  }[handoff.provider];
+  const providerLabel = "IDC Slim viewer";
 
   return [
     '<p class="slide-viewer-handoff">',

@@ -28,6 +28,14 @@ describe("renderSlideViewerHandoff", () => {
     expect(rendered).toContain("Open public slide");
   });
 
+  test("renders the bounded IDC Slim handoff as an external link", () => {
+    const rendered = renderSlideViewerHandoff(manifest.slides[0].viewerHandoff);
+
+    expect(rendered).toContain("Open public slide in IDC Slim viewer");
+    expect(rendered).toContain('target="_blank"');
+    expect(rendered).toContain('rel="noreferrer"');
+  });
+
   test("escapes the handoff url before inserting it into the external link", () => {
     const handoff: PublicViewerHandoff = {
       kind: "external",
