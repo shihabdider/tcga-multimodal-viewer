@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 3
-updated: 2026-04-21T16:58:30.064Z
+updated: 2026-04-21T17:02:46.353Z
 
 ## Wishes
 
@@ -15,7 +15,7 @@ updated: 2026-04-21T16:58:30.064Z
 | fetchPublicSourceFileReference | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | fetchPublicSlideReferenceBase | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | downloadOpenGdcFileText | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
-| selectMutationHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
+| selectMutationHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 248.9s |
 | selectExpressionHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 232.3s |
 | selectCopyNumberHighlights | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 152.7s |
 | buildIdcSlimViewerHandoff | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 162.0s |
@@ -57,3 +57,6 @@ updated: 2026-04-21T16:58:30.064Z
 - 12:55:57 selectCopyNumberHighlights: running
 - 12:58:29 selectCopyNumberHighlights: pass (152.7s, $0.2737)
 - 12:58:30 implementer_post verification for selectCopyNumberHighlights: pass
+- 12:58:36 selectMutationHighlights: running
+- 13:02:45 selectMutationHighlights: pass (248.9s, $0.4880)
+- 13:02:46 implementer_post verification for selectMutationHighlights: pass

@@ -42,3 +42,4 @@
 {"ts":"2026-04-21T16:51:50.354Z","agent":"implementer","wish":"deriveCohortManifest","layer":3,"status":"pass","turns":21,"input":71511,"output":8966,"cacheRead":587648,"cost":0.4602,"duration":222.1}
 {"ts":"2026-04-21T16:55:50.764Z","agent":"implementer","wish":"selectExpressionHighlights","layer":3,"status":"pass","turns":22,"input":32538,"output":9628,"cacheRead":464256,"cost":0.3418,"duration":232.3}
 {"ts":"2026-04-21T16:58:30.065Z","agent":"implementer","wish":"selectCopyNumberHighlights","layer":3,"status":"pass","turns":13,"input":34903,"output":6818,"cacheRead":336640,"cost":0.2737,"duration":152.7}
+{"ts":"2026-04-21T17:02:46.353Z","agent":"implementer","wish":"selectMutationHighlights","layer":3,"status":"pass","turns":19,"input":72458,"output":10572,"cacheRead":593280,"cost":0.488,"duration":248.9}

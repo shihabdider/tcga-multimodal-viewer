@@ -68,7 +68,125 @@ export function selectMutationHighlights(
   fileContents: string,
   selectors: TinyMutationSelector[],
 ): MutationHighlight[] {
-  throw new Error("not implemented: selectMutationHighlights");
+  if (selectors.length === 0) {
+    return [];
+  }
+
+  const lines = fileContents
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
+  const headerLine = lines.find((line) => !line.startsWith("#"));
+
+  if (!headerLine) {
+    throw new Error("Mutation source file is missing header line");
+  }
+
+  const headerColumns = headerLine.split("\t");
+  const geneSymbolIndex = headerColumns.indexOf("Hugo_Symbol");
+  const proteinChangeIndex = headerColumns.indexOf("HGVSp_Short");
+  const variantClassificationIndex = headerColumns.indexOf(
+    "Variant_Classification",
+  );
+  const impactIndex = headerColumns.indexOf("IMPACT");
+
+  if (
+    geneSymbolIndex < 0 ||
+    proteinChangeIndex < 0 ||
+    variantClassificationIndex < 0 ||
+    impactIndex < 0
+  ) {
+    throw new Error(
+      "Mutation source file must include Hugo_Symbol, HGVSp_Short, Variant_Classification, and IMPACT columns",
+    );
+  }
+
+  const buildSelectorKey = (
+    geneSymbol: string,
+    proteinChange: string,
+    variantClassification: string,
+  ): string => JSON.stringify([geneSymbol, proteinChange, variantClassification]);
+
+  const requestedSelectorKeys = new Set(
+    selectors.map((selector) =>
+      buildSelectorKey(
+        selector.geneSymbol,
+        selector.proteinChange,
+        selector.variantClassification,
+      ),
+    ),
+  );
+  const matchesBySelector = new Map<string, MutationHighlight[]>();
+  let headerSeen = false;
+
+  for (const line of lines) {
+    if (line.startsWith("#")) {
+      continue;
+    }
+
+    if (!headerSeen) {
+      headerSeen = true;
+      continue;
+    }
+
+    const columns = line.split("\t");
+    const geneSymbol = columns[geneSymbolIndex];
+    const proteinChange = columns[proteinChangeIndex];
+    const variantClassification = columns[variantClassificationIndex];
+    const selectorKey = buildSelectorKey(
+      geneSymbol,
+      proteinChange,
+      variantClassification,
+    );
+
+    if (!requestedSelectorKeys.has(selectorKey)) {
+      continue;
+    }
+
+    const impact = columns[impactIndex]?.trim();
+
+    if (
+      impact !== "HIGH" &&
+      impact !== "MODERATE" &&
+      impact !== "LOW" &&
+      impact !== "MODIFIER"
+    ) {
+      throw new Error(
+        `Malformed IMPACT value for mutation ${geneSymbol} ${proteinChange} ${variantClassification}`,
+      );
+    }
+
+    const matches = matchesBySelector.get(selectorKey) ?? [];
+    matches.push({
+      geneSymbol,
+      proteinChange,
+      variantClassification,
+      impact,
+    });
+    matchesBySelector.set(selectorKey, matches);
+  }
+
+  return selectors.map((selector) => {
+    const selectorKey = buildSelectorKey(
+      selector.geneSymbol,
+      selector.proteinChange,
+      selector.variantClassification,
+    );
+    const matches = matchesBySelector.get(selectorKey);
+
+    if (!matches || matches.length === 0) {
+      throw new Error(
+        `Missing mutation highlight for selector ${selector.geneSymbol} ${selector.proteinChange} ${selector.variantClassification}`,
+      );
+    }
+
+    if (matches.length > 1) {
+      throw new Error(
+        `Ambiguous mutation highlight for selector ${selector.geneSymbol} ${selector.proteinChange} ${selector.variantClassification}`,
+      );
+    }
+
+    return matches[0];
+  });
 }
 
 export function selectExpressionHighlights(
