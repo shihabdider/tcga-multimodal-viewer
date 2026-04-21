@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-21T17:27:05.367Z
+updated: 2026-04-21T17:32:25.591Z
 
 ## Wishes
 
@@ -22,7 +22,7 @@ updated: 2026-04-21T17:27:05.367Z
 | deriveCohortManifest | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 222.1s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 253.6s |
 | validateTinyCaseExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 2 | pass | 241.7s |
-| deriveGenomicSnapshot | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| deriveGenomicSnapshot | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 308.0s |
 | deriveSlideReference | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | validateTinyCohortExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 1 | pending | - |
@@ -76,3 +76,6 @@ updated: 2026-04-21T17:27:05.367Z
 - 13:23:03 validateTinyCaseExportRecipe: running
 - 13:27:04 validateTinyCaseExportRecipe: pass (241.7s, $0.3909)
 - 13:27:05 implementer_post verification for validateTinyCaseExportRecipe: pass
+- 13:27:17 deriveGenomicSnapshot: running
+- 13:32:25 deriveGenomicSnapshot: pass (308.0s, $0.5177)
+- 13:32:25 implementer_post verification for deriveGenomicSnapshot: pass

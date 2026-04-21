@@ -874,7 +874,51 @@ export async function deriveGenomicSnapshot(
   expressionGenePanel: string[],
   copyNumberGenePanel: string[],
 ): Promise<GenomicSnapshot> {
-  throw new Error("not implemented: deriveGenomicSnapshot");
+  const {
+    maskedSomaticMutation: maskedSomaticMutationFileId,
+    geneExpression: geneExpressionFileId,
+    geneLevelCopyNumber: geneLevelCopyNumberFileId,
+  } = caseRecipe.selectedFileIds;
+
+  const [maskedSomaticMutation, geneExpression, geneLevelCopyNumber] =
+    await Promise.all([
+      fetchPublicSourceFileReference(maskedSomaticMutationFileId),
+      fetchPublicSourceFileReference(geneExpressionFileId),
+      fetchPublicSourceFileReference(geneLevelCopyNumberFileId),
+    ]);
+  const [mutationFileContents, expressionFileContents, copyNumberFileContents] =
+    await Promise.all([
+      caseRecipe.mutationSelectors.length > 0
+        ? downloadOpenGdcFileText(maskedSomaticMutationFileId)
+        : Promise.resolve(""),
+      expressionGenePanel.length > 0
+        ? downloadOpenGdcFileText(geneExpressionFileId)
+        : Promise.resolve(""),
+      copyNumberGenePanel.length > 0
+        ? downloadOpenGdcFileText(geneLevelCopyNumberFileId)
+        : Promise.resolve(""),
+    ]);
+
+  return {
+    sourceFiles: {
+      maskedSomaticMutation,
+      geneExpression,
+      geneLevelCopyNumber,
+    },
+    mutationHighlights: selectMutationHighlights(
+      mutationFileContents,
+      caseRecipe.mutationSelectors,
+    ),
+    expressionMetric: "tpm_unstranded",
+    expressionHighlights: selectExpressionHighlights(
+      expressionFileContents,
+      expressionGenePanel,
+    ),
+    copyNumberHighlights: selectCopyNumberHighlights(
+      copyNumberFileContents,
+      copyNumberGenePanel,
+    ),
+  };
 }
 
 export async function deriveSlideReference(
