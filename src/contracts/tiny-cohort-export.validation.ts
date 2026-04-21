@@ -119,7 +119,34 @@ export function validateTinyCaseSelectedFileIds(
 export function validateTinyCaseExportRecipe(
   value: unknown,
 ): TinyCaseExportRecipe {
-  throw new Error("not implemented: validateTinyCaseExportRecipe");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("TinyCaseExportRecipe must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const caseIdPattern = /^TCGA-[A-Z0-9]{2}-[A-Z0-9]{4}$/;
+  const { caseId, mutationSelectors } = candidate;
+
+  if (typeof caseId !== "string" || !caseIdPattern.test(caseId)) {
+    throw new Error("TinyCaseExportRecipe.caseId must be a TCGA case identifier");
+  }
+
+  if (!Array.isArray(mutationSelectors) || mutationSelectors.length === 0) {
+    throw new Error(
+      "TinyCaseExportRecipe.mutationSelectors must be a non-empty array",
+    );
+  }
+
+  return {
+    caseId: caseId as TinyCaseExportRecipe["caseId"],
+    selectedFileIds: validateTinyCaseSelectedFileIds(candidate.selectedFileIds),
+    mutationSelectors: mutationSelectors.map((selector) =>
+      validateTinyMutationSelector(selector),
+    ),
+    viewerHandoffSeed: validateIdcSlimViewerHandoffSeed(
+      candidate.viewerHandoffSeed,
+    ),
+  };
 }
 
 export function validateTinyCohortExportRecipe(

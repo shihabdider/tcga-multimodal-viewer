@@ -1,8 +1,8 @@
 # Status
 
 phase: 2
-layer: 3
-updated: 2026-04-21T17:22:47.033Z
+layer: 2
+updated: 2026-04-21T17:27:05.367Z
 
 ## Wishes
 
@@ -21,7 +21,7 @@ updated: 2026-04-21T17:22:47.033Z
 | buildIdcSlimViewerHandoff | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 162.0s |
 | deriveCohortManifest | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 222.1s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 3 | pass | 253.6s |
-| validateTinyCaseExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 2 | pending | - |
+| validateTinyCaseExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 2 | pass | 241.7s |
 | deriveGenomicSnapshot | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | deriveSlideReference | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
@@ -73,3 +73,6 @@ updated: 2026-04-21T17:22:47.033Z
 - 13:22:46 fetchPublicCaseMetadata: pass (381.0s, $0.6176)
 - 13:22:46 implementer_post verification for fetchPublicCaseMetadata: pass
 - 13:22:47 layer 3 verification: pass
+- 13:23:03 validateTinyCaseExportRecipe: running
+- 13:27:04 validateTinyCaseExportRecipe: pass (241.7s, $0.3909)
+- 13:27:05 implementer_post verification for validateTinyCaseExportRecipe: pass
