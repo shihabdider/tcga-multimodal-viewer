@@ -84,7 +84,36 @@ export function validateTinyMutationSelector(
 export function validateTinyCaseSelectedFileIds(
   value: unknown,
 ): TinyCaseSelectedFileIds {
-  throw new Error("not implemented: validateTinyCaseSelectedFileIds");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("TinyCaseSelectedFileIds must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  const requireUuidString = (
+    field:
+      | "maskedSomaticMutation"
+      | "geneExpression"
+      | "geneLevelCopyNumber"
+      | "slide",
+  ): string => {
+    const fieldValue = candidate[field];
+
+    if (typeof fieldValue !== "string" || !uuidPattern.test(fieldValue)) {
+      throw new Error(`TinyCaseSelectedFileIds.${field} must be a UUID string`);
+    }
+
+    return fieldValue;
+  };
+
+  return {
+    maskedSomaticMutation: requireUuidString("maskedSomaticMutation"),
+    geneExpression: requireUuidString("geneExpression"),
+    geneLevelCopyNumber: requireUuidString("geneLevelCopyNumber"),
+    slide: requireUuidString("slide"),
+  };
 }
 
 export function validateTinyCaseExportRecipe(

@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 3
-updated: 2026-04-21T16:37:28.957Z
+updated: 2026-04-21T16:40:24.161Z
 
 ## Wishes
 
@@ -10,7 +10,7 @@ updated: 2026-04-21T16:37:28.957Z
 |------|------|-------|--------|------|
 | validateIdcSlimViewerHandoffSeed | src/contracts/tiny-cohort-export.validation.ts | 3 | pass | 166.6s |
 | validateTinyMutationSelector | src/contracts/tiny-cohort-export.validation.ts | 3 | pass | 148.8s |
-| validateTinyCaseSelectedFileIds | src/contracts/tiny-cohort-export.validation.ts | 3 | pending | - |
+| validateTinyCaseSelectedFileIds | src/contracts/tiny-cohort-export.validation.ts | 3 | pass | 170.8s |
 | fetchPublicCaseMetadata | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | fetchPublicSourceFileReference | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
 | fetchPublicSlideReferenceBase | src/app/export-tiny-cohort-manifests.ts | 3 | pending | - |
@@ -39,3 +39,6 @@ updated: 2026-04-21T16:37:28.957Z
 - 12:34:59 validateTinyMutationSelector: running
 - 12:37:28 validateTinyMutationSelector: pass (148.8s, $0.3468)
 - 12:37:28 implementer_post verification for validateTinyMutationSelector: pass
+- 12:37:33 validateTinyCaseSelectedFileIds: running
+- 12:40:23 validateTinyCaseSelectedFileIds: pass (170.8s, $0.3750)
+- 12:40:24 implementer_post verification for validateTinyCaseSelectedFileIds: pass
