@@ -13,7 +13,13 @@
             "if find . -type f \\( -name '*.test.ts' -o -name '*.test.tsx' -o -name '*.test.js' -o -name '*.test.jsx' -o -name '*.spec.ts' -o -name '*.spec.tsx' -o -name '*.spec.js' -o -name '*.spec.jsx' \\) | grep -q .; then bun test; else echo 'No tests found yet; skipping bun test.'; fi"
           ]
         },
-        "check": null,
+        "check": {
+          "argv": [
+            "bash",
+            "-lc",
+            "if [ -f src/app/build-tiny-cohort-static-app.ts ] && [ -f manifests/tcga-brca/tcga-brca.tiny-cohort-manifest.json ] && [ -f scripts/verify-playwright-ux.cjs ]; then bun run src/app/build-tiny-cohort-static-app.ts >/dev/null && NODE_PATH=\"$(npm root -g)\" node scripts/verify-playwright-ux.cjs; elif [ -f src/app/build-single-case-static-app.ts ] && [ -f manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json ] && [ -f scripts/verify-playwright-ux.cjs ]; then bun run src/app/build-single-case-static-app.ts >/dev/null && NODE_PATH=\"$(npm root -g)\" node scripts/verify-playwright-ux.cjs; else echo 'No local frontend preview target configured; skipping Playwright UX verification.'; fi"
+          ]
+        },
         "lint": {
           "check": null,
           "fix": null
@@ -39,6 +45,9 @@
         "final_preverify": [
           {
             "verifier": "test"
+          },
+          {
+            "verifier": "check"
           }
         ]
       }

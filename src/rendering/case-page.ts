@@ -1,4 +1,5 @@
 import type {
+  CaseId,
   CaseManifest,
   CaseMetadata,
   CopyNumberHighlight,
@@ -23,6 +24,40 @@ type DefinitionListField = {
   value: string;
 };
 
+export interface CasePageNavigationItem {
+  caseId: CaseId;
+  href: string;
+  current?: boolean;
+}
+
+export interface CasePageNavigation {
+  cohortTitle: string;
+  cohortIndexHref: string;
+  caseLinks: CasePageNavigationItem[];
+}
+
+export interface CasePageRenderOptions {
+  stylesheetHref?: string;
+  navigation?: CasePageNavigation;
+}
+
+export interface CohortIndexEntry {
+  caseId: CaseId;
+  href: string;
+  primaryDiagnosis: string;
+  diseaseType: string;
+  tumorSampleId: string;
+  mutationHighlightGenes: string[];
+  slideCount: number;
+}
+
+export interface CohortIndexPageModel {
+  title: string;
+  description: string;
+  cases: CohortIndexEntry[];
+  stylesheetHref?: string;
+}
+
 function renderDefinitionListItems(
   fields: DefinitionListField[],
   itemClassName: string,
@@ -40,12 +75,19 @@ function renderDefinitionListItems(
     .join("");
 }
 
-export function renderCasePage(manifest: CaseManifest): string {
+export function renderCasePage(
+  manifest: CaseManifest,
+  options: CasePageRenderOptions = {},
+): string {
   const renderedCaseMetadataSection = renderCaseMetadataSection(manifest.case);
   const renderedGenomicSnapshotSection = renderGenomicSnapshotSection(
     manifest.genomicSnapshot,
   );
   const renderedSlideListSection = renderSlideListSection(manifest.slides);
+  const renderedNavigationSection = options.navigation
+    ? renderCaseNavigationSection(options.navigation)
+    : "";
+  const stylesheetHref = options.stylesheetHref ?? "styles.css";
   const pageTitle = `${manifest.case.caseId} | TCGA multimodal viewer`;
 
   return [
@@ -55,17 +97,108 @@ export function renderCasePage(manifest: CaseManifest): string {
     '  <meta charset="utf-8">',
     '  <meta name="viewport" content="width=device-width, initial-scale=1">',
     `  <title>${escapeHtml(pageTitle)}</title>`,
-    '  <link rel="stylesheet" href="styles.css">',
+    `  <link rel="stylesheet" href="${escapeHtml(stylesheetHref)}">`,
     "</head>",
     "<body>",
     "  <main>",
     `    <h1>${escapeHtml(manifest.case.caseId)}</h1>`,
+    renderedNavigationSection,
     renderedCaseMetadataSection,
     renderedGenomicSnapshotSection,
     renderedSlideListSection,
     "  </main>",
     "</body>",
     "</html>",
+  ]
+    .filter((line) => line !== "")
+    .join("\n");
+}
+
+export function renderCohortIndexPage(model: CohortIndexPageModel): string {
+  const stylesheetHref = model.stylesheetHref ?? "styles.css";
+  const pageTitle = `${model.title} | TCGA multimodal viewer`;
+  const renderedCases =
+    model.cases.length === 0
+      ? '  <p class="empty-state">No cases available.</p>'
+      : [
+          '  <ul class="cohort-index__cards">',
+          model.cases
+            .map((entry) => {
+              const summaryFields: DefinitionListField[] = [
+                { label: "Primary diagnosis", value: entry.primaryDiagnosis },
+                { label: "Disease type", value: entry.diseaseType },
+                { label: "Tumor sample ID", value: entry.tumorSampleId },
+                { label: "Slides", value: String(entry.slideCount) },
+              ];
+              const renderedSummary = renderDefinitionListItems(
+                summaryFields,
+                "cohort-index__summary-item",
+              );
+              const mutationSummary =
+                entry.mutationHighlightGenes.length === 0
+                  ? "No mutation highlights pinned"
+                  : entry.mutationHighlightGenes.join(", ");
+
+              return [
+                '    <li class="cohort-index__card-item">',
+                '      <article class="cohort-case-card">',
+                `        <h2><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.caseId)}</a></h2>`,
+                '        <dl class="cohort-index__summary">',
+                renderedSummary,
+                "        </dl>",
+                `        <p class="cohort-index__mutations"><strong>Mutation highlights:</strong> ${escapeHtml(mutationSummary)}</p>`,
+                "      </article>",
+                "    </li>",
+              ].join("\n");
+            })
+            .join("\n"),
+          "  </ul>",
+        ].join("\n");
+
+  return [
+    "<!DOCTYPE html>",
+    '<html lang="en">',
+    "<head>",
+    '  <meta charset="utf-8">',
+    '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+    `  <title>${escapeHtml(pageTitle)}</title>`,
+    `  <link rel="stylesheet" href="${escapeHtml(stylesheetHref)}">`,
+    "</head>",
+    "<body>",
+    "  <main>",
+    '    <section class="cohort-index" aria-labelledby="cohort-index-heading">',
+    `      <h1 id="cohort-index-heading">${escapeHtml(model.title)}</h1>`,
+    `      <p class="cohort-index__description">${escapeHtml(model.description)}</p>`,
+    renderedCases,
+    "    </section>",
+    "  </main>",
+    "</body>",
+    "</html>",
+  ].join("\n");
+}
+
+export function renderCaseNavigationSection(
+  navigation: CasePageNavigation,
+): string {
+  const renderedCaseLinks = navigation.caseLinks
+    .map((link) => {
+      const currentAttribute = link.current ? ' aria-current="page"' : "";
+
+      return [
+        '    <li class="cohort-navigation__case-link-item">',
+        `      <a href="${escapeHtml(link.href)}"${currentAttribute}>${escapeHtml(link.caseId)}</a>`,
+        "    </li>",
+      ].join("\n");
+    })
+    .join("\n");
+
+  return [
+    '<nav class="cohort-navigation" aria-label="Cohort navigation">',
+    `  <p class="cohort-navigation__index-link"><a href="${escapeHtml(navigation.cohortIndexHref)}">Back to ${escapeHtml(navigation.cohortTitle)}</a></p>`,
+    '  <ul class="cohort-navigation__case-links">',
+    renderedCaseLinks,
+    "  </ul>",
+    "</nav>",
   ].join("\n");
 }
 
@@ -299,6 +432,14 @@ section {
   border-radius: 0.5rem;
 }
 
+nav {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid #d9e2ec;
+  border-radius: 0.5rem;
+}
+
 h1,
 h2,
 h3 {
@@ -345,5 +486,34 @@ a {
 
 code {
   font-family: "SFMono-Regular", ui-monospace, monospace;
-}`;
+}
+
+.cohort-navigation__case-links,
+.cohort-index__cards,
+.slide-list__items {
+  list-style: none;
+  padding: 0;
+}
+
+.cohort-navigation__case-links,
+.cohort-index__cards {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cohort-case-card,
+.slide-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cohort-index__description {
+  max-width: 48rem;
+}
+
+.cohort-index__mutations strong {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+`;
 }

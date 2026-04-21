@@ -29,6 +29,8 @@ When finishing a task or hitting a real decision point, keep checkpoints concise
 ## UX review
 - For frontend or UX review, use the `web-browser` skill.
 - Use its isolated Playwright Chromium instance rather than the user's running Chrome so review does not interfere with existing browser windows or profile state.
+- When a task changes visible frontend or UX behavior, always do a Playwright UX verification pass before final sign-off when a local preview or built artifact exists.
+- Prefer the `web-browser` skill for interactive/manual UX review, and keep any automated Playwright verification isolated from the user's Chrome profile as well.
 
 ## HtDP workflow
 - htdp.mode: autonomous

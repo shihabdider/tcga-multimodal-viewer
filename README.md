@@ -22,18 +22,26 @@ The current MVP order is:
 
 ## Local build and preview
 
-Build the Iteration 2 single-case static app:
+Build the Iteration 4 tiny-cohort static app:
+
+```sh
+bun run src/app/build-tiny-cohort-static-app.ts
+```
+
+This writes the default artifact to `dist/tcga-brca-tiny-cohort/`.
+
+Preview it locally with a simple static file server:
+
+```sh
+python3 -m http.server 8000 --directory dist/tcga-brca-tiny-cohort
+```
+
+Then open <http://localhost:8000>.
+
+The earlier single-case smoke-test builder is still available:
 
 ```sh
 bun run src/app/build-single-case-static-app.ts
 ```
 
-This writes the default artifact to `dist/tcga-e9-a5fl/`.
-
-Preview it locally with a simple static file server:
-
-```sh
-python3 -m http.server 8000 --directory dist/tcga-e9-a5fl
-```
-
-Then open <http://localhost:8000>.
+This writes the seed case page to `dist/tcga-e9-a5fl/`.

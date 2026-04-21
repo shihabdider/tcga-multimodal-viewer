@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "cohort-manifest/v1",
+  "cohortId": "tcga-brca-tiny-cohort",
+  "projectId": "TCGA-BRCA",
+  "title": "TCGA-BRCA tiny cohort",
+  "description": "Three checked-in public TCGA-BRCA cases linking open GDC genomic snapshots to IDC slide viewer handoffs.",
+  "caseManifestPaths": [
+    "tcga-e9-a5fl.case-manifest.json",
+    "tcga-3c-aalk.case-manifest.json",
+    "tcga-4h-aaak.case-manifest.json"
+  ]
+}

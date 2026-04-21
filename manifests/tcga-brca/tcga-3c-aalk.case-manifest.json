@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "case-manifest/v1",
+  "case": {
+    "caseId": "TCGA-3C-AALK",
+    "gdcCaseId": "c31900a4-5dcd-4022-97ac-638e86e889e4",
+    "projectId": "TCGA-BRCA",
+    "primarySite": "Breast",
+    "diseaseType": "Ductal and Lobular Neoplasms",
+    "primaryDiagnosis": "Infiltrating duct carcinoma, NOS",
+    "gender": "female",
+    "tumorSampleId": "TCGA-3C-AALK-01A"
+  },
+  "genomicSnapshot": {
+    "sourceFiles": {
+      "maskedSomaticMutation": {
+        "fileId": "a5056a39-67d7-420c-82fc-3a086b6ec75e",
+        "fileName": "62c48aed-bc6f-40b7-b934-b11b8f42cfcf.wxs.aliquot_ensemble_masked.maf.gz",
+        "dataType": "Masked Somatic Mutation",
+        "workflow": "Aliquot Ensemble Somatic Variant Merging and Masking"
+      },
+      "geneExpression": {
+        "fileId": "7b4d770a-2b8c-4ca5-bf51-c4745c5de39a",
+        "fileName": "ae8996bd-b0b7-4f9b-91fa-606f95d49f8c.rna_seq.augmented_star_gene_counts.tsv",
+        "dataType": "Gene Expression Quantification",
+        "workflow": "STAR - Counts"
+      },
+      "geneLevelCopyNumber": {
+        "fileId": "e26abc28-15b0-4832-bd02-43c5dd0b55e8",
+        "fileName": "TCGA-BRCA.52dbb525-a0ad-4dce-bb51-650f97510c6e.absolute_liftover.gene_level_copy_number.v36.tsv",
+        "dataType": "Gene Level Copy Number",
+        "workflow": "ABSOLUTE LiftOver"
+      }
+    },
+    "mutationHighlights": [
+      {
+        "geneSymbol": "MAP2K4",
+        "proteinChange": "p.R281*",
+        "variantClassification": "Nonsense_Mutation",
+        "impact": "HIGH"
+      },
+      {
+        "geneSymbol": "PIK3CA",
+        "proteinChange": "p.E542K",
+        "variantClassification": "Missense_Mutation",
+        "impact": "MODERATE"
+      },
+      {
+        "geneSymbol": "PLEKHA1",
+        "proteinChange": "p.R265*",
+        "variantClassification": "Nonsense_Mutation",
+        "impact": "HIGH"
+      }
+    ],
+    "expressionMetric": "tpm_unstranded",
+    "expressionHighlights": [
+      {
+        "geneSymbol": "ESR1",
+        "tpmUnstranded": 30.2662
+      },
+      {
+        "geneSymbol": "PGR",
+        "tpmUnstranded": 24.9864
+      },
+      {
+        "geneSymbol": "ERBB2",
+        "tpmUnstranded": 550.8894
+      },
+      {
+        "geneSymbol": "KRT5",
+        "tpmUnstranded": 140.1336
+      }
+    ],
+    "copyNumberHighlights": [
+      {
+        "geneSymbol": "PIK3CA",
+        "copyNumber": 2
+      },
+      {
+        "geneSymbol": "MYC",
+        "copyNumber": 2
+      },
+      {
+        "geneSymbol": "CDKN2A",
+        "copyNumber": 2
+      },
+      {
+        "geneSymbol": "ERBB2",
+        "copyNumber": 6
+      }
+    ]
+  },
+  "slides": [
+    {
+      "source": "gdc",
+      "access": "open",
+      "fileId": "93b26333-5723-4fa4-a4de-6124c04ab243",
+      "fileName": "TCGA-3C-AALK-01Z-00-DX1.4E6EB156-BB19-410F-878F-FC0EA7BD0B53.svs",
+      "slideSubmitterId": "TCGA-3C-AALK-01Z-00-DX1",
+      "slideId": "f3edee5e-8b3d-4607-961f-4c3604c60b1d",
+      "sampleType": "Primary Tumor",
+      "experimentalStrategy": "Diagnostic Slide",
+      "publicPageUrl": "https://portal.gdc.cancer.gov/files/93b26333-5723-4fa4-a4de-6124c04ab243",
+      "publicDownloadUrl": "https://api.gdc.cancer.gov/data/93b26333-5723-4fa4-a4de-6124c04ab243",
+      "viewerHandoff": {
+        "kind": "external",
+        "provider": "idc-slim",
+        "studyInstanceUid": "2.25.274276131087380914534458870400376831920",
+        "seriesInstanceUid": "1.3.6.1.4.1.5962.99.1.1256906690.1061511167.1637639479234.2.0",
+        "url": "https://viewer.imaging.datacommons.cancer.gov/slim/studies/2.25.274276131087380914534458870400376831920/series/1.3.6.1.4.1.5962.99.1.1256906690.1061511167.1637639479234.2.0"
+      }
+    }
+  ]
+}
