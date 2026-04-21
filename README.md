@@ -22,7 +22,7 @@ The current MVP order is:
 
 ## Local build and preview
 
-Build the Iteration 4 tiny-cohort static app:
+Build the Iteration 4 tiny-cohort static app from the checked-in manifest:
 
 ```sh
 bun run src/app/build-tiny-cohort-static-app.ts
@@ -30,12 +30,29 @@ bun run src/app/build-tiny-cohort-static-app.ts
 
 This writes the default artifact to `dist/tcga-brca-tiny-cohort/`.
 
-Preview it locally with a simple static file server:
+For the Iteration 5 reproducible tiny-manifest export, regenerate the source-normalized tiny cohort manifests from public inputs:
+
+```sh
+bun run src/app/export-tiny-cohort-manifests.ts
+```
+
+By default this reads `manifests/tcga-brca/tcga-brca.tiny-export-recipe.json` and writes the exported manifest set to `dist/tcga-brca-manifest-export/`.
+
+Rebuild the tiny cohort static app from that exported cohort manifest with the existing static builder:
+
+```sh
+bun run src/app/build-tiny-cohort-static-app.ts \
+  dist/tcga-brca-manifest-export/tcga-brca.tiny-cohort-manifest.json \
+  dist/tcga-brca-tiny-cohort-from-export
+```
+
+Preview a build locally with a simple static file server:
 
 ```sh
 python3 -m http.server 8000 --directory dist/tcga-brca-tiny-cohort
 ```
 
+If you rebuilt from the exported manifest, point `--directory` at the output you chose above.
 Then open <http://localhost:8000>.
 
 The earlier single-case smoke-test builder is still available:
