@@ -51,7 +51,94 @@ export async function fetchPublicCaseMetadata(
 export async function fetchPublicSourceFileReference(
   fileId: string,
 ): Promise<SourceFileReference> {
-  throw new Error("not implemented: fetchPublicSourceFileReference");
+  const endpoint = `https://api.gdc.cancer.gov/files/${fileId}?expand=analysis`;
+  const describeError = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error);
+
+  let response: Response;
+
+  try {
+    response = await fetch(endpoint);
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch public GDC file metadata ${fileId}: ${describeError(error)}`,
+    );
+  }
+
+  if (!response.ok) {
+    const statusSuffix = response.statusText ? ` ${response.statusText}` : "";
+
+    throw new Error(
+      `Failed to fetch public GDC file metadata ${fileId}: ${response.status}${statusSuffix}`,
+    );
+  }
+
+  let responseJson: unknown;
+
+  try {
+    responseJson = await response.json();
+  } catch (error) {
+    throw new Error(
+      `Public GDC file metadata ${fileId} is malformed: ${describeError(error)}`,
+    );
+  }
+
+  if (
+    typeof responseJson !== "object" ||
+    responseJson === null ||
+    Array.isArray(responseJson)
+  ) {
+    throw new Error(
+      `Public GDC file metadata ${fileId} is malformed: response body must be an object`,
+    );
+  }
+
+  const { data } = responseJson as { data?: unknown };
+
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    throw new Error(
+      `Public GDC file metadata ${fileId} is malformed: response.data must be an object`,
+    );
+  }
+
+  const {
+    access,
+    file_id: responseFileId,
+    file_name: fileName,
+    data_type: dataType,
+    analysis,
+  } = data as {
+    access?: unknown;
+    file_id?: unknown;
+    file_name?: unknown;
+    data_type?: unknown;
+    analysis?: unknown;
+  };
+
+  if (access !== "open") {
+    throw new Error(`Public GDC file ${fileId} must have open access`);
+  }
+
+  const workflow =
+    typeof analysis === "object" && analysis !== null && !Array.isArray(analysis)
+      ? (analysis as { workflow_type?: unknown }).workflow_type
+      : undefined;
+  const { validateSourceFileReference } = await import(
+    "../contracts/case-manifest.validation"
+  );
+
+  try {
+    return validateSourceFileReference({
+      fileId: responseFileId,
+      fileName,
+      dataType,
+      workflow,
+    });
+  } catch (error) {
+    throw new Error(
+      `Public GDC file metadata ${fileId} is malformed: ${describeError(error)}`,
+    );
+  }
 }
 
 export async function fetchPublicSlideReferenceBase(
