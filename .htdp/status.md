@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 1
-updated: 2026-04-21T17:47:31.093Z
+updated: 2026-04-21T17:53:34.913Z
 
 ## Wishes
 
@@ -26,7 +26,7 @@ updated: 2026-04-21T17:47:31.093Z
 | deriveSlideReference | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 243.4s |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 307.1s |
 | validateTinyCohortExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 1 | pass | 321.7s |
-| deriveCaseManifest | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
+| deriveCaseManifest | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 355.7s |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 0 | pending | - |
 
 ## Log
@@ -89,3 +89,7 @@ updated: 2026-04-21T17:47:31.093Z
 - 13:42:09 validateTinyCohortExportRecipe: running
 - 13:47:30 validateTinyCohortExportRecipe: pass (321.7s, $0.5923)
 - 13:47:31 implementer_post verification for validateTinyCohortExportRecipe: pass
+- 13:47:38 deriveCaseManifest: running
+- 13:53:34 deriveCaseManifest: pass (355.7s, $0.5787)
+- 13:53:34 implementer_post verification for deriveCaseManifest: pass
+- 13:53:34 layer 1 verification: pass

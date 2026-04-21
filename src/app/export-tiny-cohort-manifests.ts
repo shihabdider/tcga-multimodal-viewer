@@ -943,7 +943,25 @@ export async function deriveCaseManifest(
   expressionGenePanel: string[],
   copyNumberGenePanel: string[],
 ): Promise<CaseManifest> {
-  throw new Error("not implemented: deriveCaseManifest");
+  const [caseMetadata, genomicSnapshot, slideReference] = await Promise.all([
+    fetchPublicCaseMetadata(caseRecipe.caseId),
+    deriveGenomicSnapshot(
+      caseRecipe,
+      expressionGenePanel,
+      copyNumberGenePanel,
+    ),
+    deriveSlideReference(caseRecipe),
+  ]);
+  const { validateCaseManifest } = await import(
+    "../contracts/case-manifest.validation"
+  );
+
+  return validateCaseManifest({
+    schemaVersion: "case-manifest/v1",
+    case: caseMetadata,
+    genomicSnapshot,
+    slides: [slideReference],
+  });
 }
 
 export function deriveCohortManifest(
