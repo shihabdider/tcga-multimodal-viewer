@@ -1093,7 +1093,52 @@ export async function writeManifestJsonFiles(
   cohortManifest: CohortManifest,
   caseManifests: CaseManifest[],
 ): Promise<ManifestJsonFile[]> {
-  throw new Error("not implemented: writeManifestJsonFiles");
+  const { mkdir, writeFile } = await import("node:fs/promises");
+  const { join } = await import("node:path");
+  const cohortOutputPath = "tcga-brca.tiny-cohort-manifest.json";
+  const expectedCaseManifestPaths = new Set(cohortManifest.caseManifestPaths);
+  const caseManifestsByOutputPath = new Map<string, CaseManifest>();
+
+  for (const caseManifest of caseManifests) {
+    const outputPath = `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
+
+    if (!expectedCaseManifestPaths.has(outputPath)) {
+      throw new Error(`Unexpected case manifest for cohort path ${outputPath}`);
+    }
+
+    if (caseManifestsByOutputPath.has(outputPath)) {
+      throw new Error(`Duplicate case manifest for cohort path ${outputPath}`);
+    }
+
+    caseManifestsByOutputPath.set(outputPath, caseManifest);
+  }
+
+  const files: ManifestJsonFile[] = [
+    {
+      outputPath: cohortOutputPath,
+      content: serializeNormalizedManifestJson(cohortManifest),
+    },
+    ...cohortManifest.caseManifestPaths.map((outputPath) => {
+      const caseManifest = caseManifestsByOutputPath.get(outputPath);
+
+      if (!caseManifest) {
+        throw new Error(`Missing case manifest for cohort path ${outputPath}`);
+      }
+
+      return {
+        outputPath,
+        content: serializeNormalizedManifestJson(caseManifest),
+      };
+    }),
+  ];
+
+  await mkdir(outputDirectory, { recursive: true });
+
+  for (const file of files) {
+    await writeFile(join(outputDirectory, file.outputPath), file.content, "utf8");
+  }
+
+  return files;
 }
 
 export async function exportTinyCohortManifests(

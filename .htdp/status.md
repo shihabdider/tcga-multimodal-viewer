@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-21T17:36:37.433Z
+updated: 2026-04-21T17:42:00.067Z
 
 ## Wishes
 
@@ -24,7 +24,7 @@ updated: 2026-04-21T17:36:37.433Z
 | validateTinyCaseExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 2 | pass | 241.7s |
 | deriveGenomicSnapshot | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 308.0s |
 | deriveSlideReference | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 243.4s |
-| writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 307.1s |
 | validateTinyCohortExportRecipe | src/contracts/tiny-cohort-export.validation.ts | 1 | pending | - |
 | deriveCaseManifest | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 0 | pending | - |
@@ -82,3 +82,7 @@ updated: 2026-04-21T17:36:37.433Z
 - 13:32:33 deriveSlideReference: running
 - 13:36:37 deriveSlideReference: pass (243.4s, $0.4658)
 - 13:36:37 implementer_post verification for deriveSlideReference: pass
+- 13:36:52 writeManifestJsonFiles: running
+- 13:41:59 writeManifestJsonFiles: pass (307.1s, $0.5172)
+- 13:41:59 implementer_post verification for writeManifestJsonFiles: pass
+- 13:42:00 layer 2 verification: pass
