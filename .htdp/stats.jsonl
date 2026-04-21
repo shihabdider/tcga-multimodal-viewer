@@ -57,3 +57,4 @@
 {"ts":"2026-04-21T18:03:44.100Z","agent":"abstractor","wish":null,"layer":null,"status":"pass","turns":18,"input":47915,"output":11243,"cacheRead":527872,"cost":0.4204,"duration":254.1}
 {"ts":"2026-04-21T18:06:00.619Z","agent":"implementer","wish":null,"layer":null,"status":"pass","turns":11,"input":19733,"output":3760,"cacheRead":151808,"cost":0.1437,"duration":90.9}
 {"ts":"2026-04-21T18:25:11.821Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":26,"input":57497,"output":17894,"cacheRead":988672,"cost":0.6593,"duration":429.1}
+{"ts":"2026-04-21T18:30:12.921Z","agent":"implementer","wish":"documentTinyBrcaSmokeTestLocalRunbook","layer":0,"status":"pass","turns":19,"input":40332,"output":11062,"cacheRead":528256,"cost":0.3988,"duration":268.1}
