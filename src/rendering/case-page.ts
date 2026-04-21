@@ -104,17 +104,84 @@ export function renderGenomicSnapshotSection(snapshot: GenomicSnapshot): string 
 }
 
 export function renderSlideListSection(slides: SlideReference[]): string {
-  for (const slide of slides) {
-    renderSlideViewerHandoff(slide.viewerHandoff);
+  if (slides.length === 0) {
+    return [
+      '<section class="slide-list" aria-labelledby="slide-list-heading">',
+      '  <h2 id="slide-list-heading">Slides</h2>',
+      '  <p class="empty-state">No public slides available.</p>',
+      "</section>",
+    ].join("\n");
   }
 
-  return "";
+  const renderedSlides = slides
+    .map((slide) => {
+      const metadataFields: Array<{ label: string; value: string }> = [
+        { label: "Slide submitter ID", value: slide.slideSubmitterId },
+        { label: "File name", value: slide.fileName },
+        { label: "Sample type", value: slide.sampleType },
+        {
+          label: "Experimental strategy",
+          value: slide.experimentalStrategy,
+        },
+        { label: "File ID", value: slide.fileId },
+        { label: "Slide ID", value: slide.slideId },
+        { label: "Source", value: slide.source },
+        { label: "Access", value: slide.access },
+      ];
+
+      const renderedMetadata = metadataFields
+        .map(
+          ({ label, value }) =>
+            [
+              '          <div class="slide-list__metadata-item">',
+              `            <dt>${label}</dt>`,
+              `            <dd>${escapeHtml(value)}</dd>`,
+              "          </div>",
+            ].join("\n"),
+        )
+        .join("\n");
+
+      return [
+        '    <li class="slide-list__item">',
+        '      <article class="slide-card">',
+        `        <h3>${escapeHtml(slide.slideSubmitterId)}</h3>`,
+        '        <dl class="slide-list__metadata">',
+        renderedMetadata,
+        "        </dl>",
+        '        <p class="slide-list__links">',
+        `          <a href="${escapeHtml(slide.publicPageUrl)}" target="_blank" rel="noreferrer">GDC file page</a>`,
+        '          <span aria-hidden="true"> · </span>',
+        `          <a href="${escapeHtml(slide.publicDownloadUrl)}" target="_blank" rel="noreferrer">Public download</a>`,
+        "        </p>",
+        renderSlideViewerHandoff(slide.viewerHandoff),
+        "      </article>",
+        "    </li>",
+      ].join("\n");
+    })
+    .join("\n");
+
+  return [
+    '<section class="slide-list" aria-labelledby="slide-list-heading">',
+    '  <h2 id="slide-list-heading">Slides</h2>',
+    '  <ul class="slide-list__items">',
+    renderedSlides,
+    "  </ul>",
+    "</section>",
+  ].join("\n");
 }
 
 export function renderSlideViewerHandoff(
-  _handoff: PublicViewerHandoff,
+  handoff: PublicViewerHandoff,
 ): string {
-  return "";
+  const providerLabel = {
+    "idc-slim": "IDC Slim viewer",
+  }[handoff.provider];
+
+  return [
+    '<p class="slide-viewer-handoff">',
+    `  <a href="${escapeHtml(handoff.url)}" target="_blank" rel="noreferrer">Open public slide in ${providerLabel}</a>`,
+    "</p>",
+  ].join("\n");
 }
 
 export function renderMutationHighlightsSection(

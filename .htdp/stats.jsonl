@@ -28,3 +28,5 @@
 {"ts":"2026-04-20T21:31:15.044Z","agent":"implementer","wish":null,"layer":null,"status":"pass","turns":16,"input":31961,"output":3258,"cacheRead":293120,"cost":0.2021,"duration":102.4}
 {"ts":"2026-04-21T14:23:01.501Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":35,"input":73708,"output":29543,"cacheRead":1656960,"cost":1.0417,"duration":657.8}
 {"ts":"2026-04-21T14:31:40.664Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":21,"input":52545,"output":17087,"cacheRead":788224,"cost":0.5847,"duration":396.6}
+{"ts":"2026-04-21T14:36:08.517Z","agent":"implementer","wish":"renderSlideViewerHandoff","layer":1,"status":"fail","turns":18,"input":39493,"output":7549,"cacheRead":468480,"cost":0.3291,"duration":187}
+{"ts":"2026-04-21T14:41:11.682Z","agent":"implementer","wish":"renderSlideListSection","layer":0,"status":"pass","turns":18,"input":38066,"output":11199,"cacheRead":475904,"cost":0.3821,"duration":273.8}
