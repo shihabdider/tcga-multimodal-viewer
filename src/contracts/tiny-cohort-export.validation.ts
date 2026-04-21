@@ -152,5 +152,78 @@ export function validateTinyCaseExportRecipe(
 export function validateTinyCohortExportRecipe(
   value: unknown,
 ): TinyCohortExportRecipe {
-  throw new Error("not implemented: validateTinyCohortExportRecipe");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("TinyCohortExportRecipe must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (candidate.schemaVersion !== "tiny-cohort-export-recipe/v1") {
+    throw new Error(
+      'TinyCohortExportRecipe.schemaVersion must be "tiny-cohort-export-recipe/v1"',
+    );
+  }
+
+  const requireNonEmptyString = (
+    field: "cohortId" | "title" | "description",
+  ): string => {
+    const fieldValue = candidate[field];
+
+    if (typeof fieldValue !== "string" || fieldValue.trim().length === 0) {
+      throw new Error(
+        `TinyCohortExportRecipe.${field} must be a non-empty string`,
+      );
+    }
+
+    return fieldValue;
+  };
+
+  const validateGenePanel = (
+    field: "expressionGenePanel" | "copyNumberGenePanel",
+  ): string[] => {
+    const panel = candidate[field];
+
+    if (!Array.isArray(panel) || panel.length === 0) {
+      throw new Error(`TinyCohortExportRecipe.${field} must be a non-empty array`);
+    }
+
+    return panel.map((geneSymbol, index) => {
+      if (typeof geneSymbol !== "string" || geneSymbol.trim().length === 0) {
+        throw new Error(
+          `TinyCohortExportRecipe.${field}[${index}] must be a non-empty string`,
+        );
+      }
+
+      return geneSymbol;
+    });
+  };
+
+  const cases = candidate.cases;
+
+  if (!Array.isArray(cases) || cases.length === 0) {
+    throw new Error("TinyCohortExportRecipe.cases must be a non-empty array");
+  }
+
+  if (candidate.projectId !== "TCGA-BRCA") {
+    throw new Error('TinyCohortExportRecipe.projectId must be "TCGA-BRCA"');
+  }
+
+  const validatedCases = cases.map((caseRecipe) =>
+    validateTinyCaseExportRecipe(caseRecipe),
+  );
+
+  if (new Set(validatedCases.map(({ caseId }) => caseId)).size !== validatedCases.length) {
+    throw new Error("TinyCohortExportRecipe.cases must contain unique caseIds");
+  }
+
+  return {
+    schemaVersion: "tiny-cohort-export-recipe/v1",
+    cohortId: requireNonEmptyString("cohortId"),
+    projectId: "TCGA-BRCA",
+    title: requireNonEmptyString("title"),
+    description: requireNonEmptyString("description"),
+    expressionGenePanel: validateGenePanel("expressionGenePanel"),
+    copyNumberGenePanel: validateGenePanel("copyNumberGenePanel"),
+    cases: validatedCases,
+  };
 }
