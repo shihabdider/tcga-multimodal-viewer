@@ -35,3 +35,4 @@
 {"ts":"2026-04-21T16:15:15.576Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":5,"input":12839,"output":4702,"cacheRead":40704,"cost":0.1128,"duration":98.9}
 {"ts":"2026-04-21T16:31:34.170Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":18,"input":63195,"output":30612,"cacheRead":829696,"cost":0.8246,"duration":603.7}
 {"ts":"2026-04-21T16:34:55.032Z","agent":"implementer","wish":"validateIdcSlimViewerHandoffSeed","layer":3,"status":"pass","turns":18,"input":36922,"output":6583,"cacheRead":461056,"cost":0.3063,"duration":166.6}
+{"ts":"2026-04-21T16:37:28.957Z","agent":"implementer","wish":"validateTinyMutationSelector","layer":3,"status":"pass","turns":20,"input":45031,"output":5940,"cacheRead":580480,"cost":0.3468,"duration":148.8}

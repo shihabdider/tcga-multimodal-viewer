@@ -48,7 +48,37 @@ export function validateIdcSlimViewerHandoffSeed(
 export function validateTinyMutationSelector(
   value: unknown,
 ): TinyMutationSelector {
-  throw new Error("not implemented: validateTinyMutationSelector");
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new Error("TinyMutationSelector must be an object");
+  }
+
+  const candidate = value as Record<string, unknown>;
+  const { geneSymbol, proteinChange, variantClassification } = candidate;
+
+  if (typeof geneSymbol !== "string" || geneSymbol.trim() === "") {
+    throw new Error("TinyMutationSelector.geneSymbol must be a non-empty string");
+  }
+
+  if (typeof proteinChange !== "string" || proteinChange.trim() === "") {
+    throw new Error(
+      "TinyMutationSelector.proteinChange must be a non-empty string",
+    );
+  }
+
+  if (
+    typeof variantClassification !== "string" ||
+    variantClassification.trim() === ""
+  ) {
+    throw new Error(
+      "TinyMutationSelector.variantClassification must be a non-empty string",
+    );
+  }
+
+  return {
+    geneSymbol,
+    proteinChange,
+    variantClassification,
+  };
 }
 
 export function validateTinyCaseSelectedFileIds(
