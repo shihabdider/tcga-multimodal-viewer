@@ -45,7 +45,234 @@ export async function loadTinyCohortExportRecipeFromFile(
 export async function fetchPublicCaseMetadata(
   caseId: CaseId,
 ): Promise<CaseMetadata> {
-  throw new Error("not implemented: fetchPublicCaseMetadata");
+  const endpointUrl = new URL("https://api.gdc.cancer.gov/cases");
+
+  endpointUrl.searchParams.set(
+    "filters",
+    JSON.stringify({
+      op: "in",
+      content: {
+        field: "submitter_id",
+        value: [caseId],
+      },
+    }),
+  );
+  endpointUrl.searchParams.set(
+    "expand",
+    "demographic,diagnoses,samples,project",
+  );
+  endpointUrl.searchParams.set("size", "2");
+
+  const endpoint = endpointUrl.toString();
+  const describeError = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error);
+  const readRecord = (value: unknown, path: string): Record<string, unknown> => {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      throw new Error(`${path} must be an object`);
+    }
+
+    return value as Record<string, unknown>;
+  };
+  const readRecordArray = (
+    value: unknown,
+    path: string,
+  ): Record<string, unknown>[] => {
+    if (!Array.isArray(value)) {
+      throw new Error(`${path} must be an array`);
+    }
+
+    return value.map((entry, index) => readRecord(entry, `${path}[${index}]`));
+  };
+  const readNonEmptyString = (
+    record: Record<string, unknown>,
+    fieldName: string,
+    path: string,
+  ): string => {
+    const value = record[fieldName];
+
+    if (typeof value !== "string" || value.trim().length === 0) {
+      throw new Error(`${path} must be a non-empty string`);
+    }
+
+    return value;
+  };
+  const boundedPrimaryTumorSamplePattern = new RegExp(
+    `^${caseId.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}-\\d{2}[A-Y]$`,
+  );
+
+  let response: Response;
+
+  try {
+    response = await fetch(endpoint);
+  } catch (error) {
+    throw new Error(
+      `Failed to fetch public GDC case metadata ${caseId}: ${describeError(error)}`,
+    );
+  }
+
+  if (!response.ok) {
+    const statusSuffix = response.statusText ? ` ${response.statusText}` : "";
+
+    throw new Error(
+      `Failed to fetch public GDC case metadata ${caseId}: ${response.status}${statusSuffix}`,
+    );
+  }
+
+  let responseJson: unknown;
+
+  try {
+    responseJson = await response.json();
+  } catch (error) {
+    throw new Error(
+      `Public GDC case metadata ${caseId} is malformed: ${describeError(error)}`,
+    );
+  }
+
+  if (
+    typeof responseJson !== "object" ||
+    responseJson === null ||
+    Array.isArray(responseJson)
+  ) {
+    throw new Error(
+      `Public GDC case metadata ${caseId} is malformed: response body must be an object`,
+    );
+  }
+
+  const { data } = responseJson as { data?: unknown };
+
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    throw new Error(
+      `Public GDC case metadata ${caseId} is malformed: response.data must be an object`,
+    );
+  }
+
+  const { validateCaseMetadata } = await import(
+    "../contracts/case-manifest.validation"
+  );
+
+  try {
+    const dataRecord = data as Record<string, unknown>;
+    const hits = readRecordArray(dataRecord.hits, "response.data.hits");
+
+    if (hits.length !== 1) {
+      throw new Error(
+        `response.data.hits must contain exactly one case for submitter_id ${caseId}`,
+      );
+    }
+
+    const caseRecord = hits[0];
+    const responseCaseId = readNonEmptyString(
+      caseRecord,
+      "submitter_id",
+      "response.data.hits[0].submitter_id",
+    );
+
+    if (responseCaseId !== caseId) {
+      throw new Error(
+        `response.data.hits[0].submitter_id must match requested caseId ${caseId}`,
+      );
+    }
+
+    const gdcCaseId = readNonEmptyString(
+      caseRecord,
+      "case_id",
+      "response.data.hits[0].case_id",
+    );
+    const primarySite = readNonEmptyString(
+      caseRecord,
+      "primary_site",
+      "response.data.hits[0].primary_site",
+    );
+    const diseaseType = readNonEmptyString(
+      caseRecord,
+      "disease_type",
+      "response.data.hits[0].disease_type",
+    );
+    const projectRecord = readRecord(
+      caseRecord.project,
+      "response.data.hits[0].project",
+    );
+    const demographicRecord = readRecord(
+      caseRecord.demographic,
+      "response.data.hits[0].demographic",
+    );
+    const projectId = readNonEmptyString(
+      projectRecord,
+      "project_id",
+      "response.data.hits[0].project.project_id",
+    );
+    const gender = readNonEmptyString(
+      demographicRecord,
+      "gender",
+      "response.data.hits[0].demographic.gender",
+    );
+    const diagnosisRecords = readRecordArray(
+      caseRecord.diagnoses,
+      "response.data.hits[0].diagnoses",
+    );
+    const primaryDiagnosisCandidates = diagnosisRecords.flatMap((diagnosis) => {
+      const primaryDiagnosis = diagnosis.primary_diagnosis;
+      const isPrimaryDiagnosis =
+        diagnosis.diagnosis_is_primary_disease === true ||
+        diagnosis.classification_of_tumor === "primary";
+
+      if (
+        !isPrimaryDiagnosis ||
+        typeof primaryDiagnosis !== "string" ||
+        primaryDiagnosis.trim().length === 0
+      ) {
+        return [];
+      }
+
+      return [primaryDiagnosis];
+    });
+
+    if (primaryDiagnosisCandidates.length !== 1) {
+      throw new Error(
+        "response.data.hits[0].diagnoses must contain exactly one primary diagnosis",
+      );
+    }
+
+    const sampleRecords = readRecordArray(
+      caseRecord.samples,
+      "response.data.hits[0].samples",
+    );
+    const boundedPrimaryTumorSamples = sampleRecords.flatMap((sample) => {
+      const submitterId = sample.submitter_id;
+
+      if (
+        sample.sample_type !== "Primary Tumor" ||
+        typeof submitterId !== "string" ||
+        submitterId.trim().length === 0 ||
+        !boundedPrimaryTumorSamplePattern.test(submitterId)
+      ) {
+        return [];
+      }
+
+      return [submitterId];
+    });
+
+    if (boundedPrimaryTumorSamples.length !== 1) {
+      throw new Error(
+        "response.data.hits[0].samples must resolve to exactly one bounded primary tumor sample",
+      );
+    }
+
+    return validateCaseMetadata({
+      caseId,
+      gdcCaseId,
+      projectId,
+      primarySite,
+      diseaseType,
+      primaryDiagnosis: primaryDiagnosisCandidates[0],
+      gender,
+      tumorSampleId: boundedPrimaryTumorSamples[0],
+    });
+  } catch (error) {
+    throw new Error(
+      `Public GDC case metadata ${caseId} is malformed: ${describeError(error)}`,
+    );
+  }
 }
 
 export async function fetchPublicSourceFileReference(
