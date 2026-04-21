@@ -88,7 +88,15 @@ export function selectCopyNumberHighlights(
 export function buildIdcSlimViewerHandoff(
   seed: IdcSlimViewerHandoffSeed,
 ): PublicViewerHandoff {
-  throw new Error("not implemented: buildIdcSlimViewerHandoff");
+  const url = `https://viewer.imaging.datacommons.cancer.gov/slim/studies/${seed.studyInstanceUid}/series/${seed.seriesInstanceUid}`;
+
+  return {
+    kind: "external",
+    provider: "idc-slim",
+    studyInstanceUid: seed.studyInstanceUid,
+    seriesInstanceUid: seed.seriesInstanceUid,
+    url,
+  };
 }
 
 export async function deriveGenomicSnapshot(
