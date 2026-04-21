@@ -152,7 +152,77 @@ export function selectCopyNumberHighlights(
   fileContents: string,
   genePanel: string[],
 ): CopyNumberHighlight[] {
-  throw new Error("not implemented: selectCopyNumberHighlights");
+  if (genePanel.length === 0) {
+    return [];
+  }
+
+  const lines = fileContents
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
+  const headerLine = lines.find((line) => !line.startsWith("#"));
+
+  if (!headerLine) {
+    throw new Error("Copy-number source file is missing header line");
+  }
+
+  const headerColumns = headerLine.split("\t");
+  const geneNameIndex = headerColumns.indexOf("gene_name");
+  const copyNumberIndex = headerColumns.indexOf("copy_number");
+
+  if (geneNameIndex < 0 || copyNumberIndex < 0) {
+    throw new Error(
+      "Copy-number source file must include gene_name and copy_number columns",
+    );
+  }
+
+  const requestedGenes = new Set(genePanel);
+  const copyNumberByGene = new Map<string, number>();
+  let headerSeen = false;
+
+  for (const line of lines) {
+    if (line.startsWith("#")) {
+      continue;
+    }
+
+    if (!headerSeen) {
+      headerSeen = true;
+      continue;
+    }
+
+    const columns = line.split("\t");
+    const geneName = columns[geneNameIndex];
+
+    if (!geneName || !requestedGenes.has(geneName)) {
+      continue;
+    }
+
+    const rawCopyNumber = columns[copyNumberIndex]?.trim();
+
+    if (!rawCopyNumber) {
+      throw new Error(`Malformed copy_number value for gene ${geneName}`);
+    }
+
+    const copyNumber = Number(rawCopyNumber);
+
+    if (!Number.isFinite(copyNumber) || copyNumber < 0) {
+      throw new Error(`Malformed copy_number value for gene ${geneName}`);
+    }
+
+    copyNumberByGene.set(geneName, copyNumber);
+  }
+
+  return genePanel.map((geneSymbol) => {
+    const copyNumber = copyNumberByGene.get(geneSymbol);
+
+    if (copyNumber === undefined) {
+      throw new Error(`Missing copy-number value for gene ${geneSymbol}`);
+    }
+
+    return {
+      geneSymbol,
+      copyNumber,
+    };
+  });
 }
 
 export function buildIdcSlimViewerHandoff(
