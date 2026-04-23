@@ -1,14 +1,14 @@
 # Status
 
-phase: 1
-layer: -
-updated: 2026-04-23T18:45:24.856Z
+phase: 2
+layer: 2
+updated: 2026-04-23T19:06:47.962Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
-| deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 632.5s |
 | loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
@@ -22,3 +22,6 @@ updated: 2026-04-23T18:45:24.856Z
 
 - 14:45:24 stubber complete, 9 wishes, 3 layers
 - 14:45:24 stubber_post verification: pass
+- 14:56:14 deriveCohortIndexManifest: running
+- 15:06:47 deriveCohortIndexManifest: pass (632.5s, $0.5197)
+- 15:06:47 implementer_post verification for deriveCohortIndexManifest: pass

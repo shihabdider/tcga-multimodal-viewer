@@ -44,7 +44,8 @@ Add a new cohort-index contract and export/build path that contains the bounded 
 ### Assumptions
 - “Searchable/filterable” in this slice means exporting bounded cohort-summary fields, not implementing the full UX.
 - The initial summary field set should match the current cohort card needs: case/path reference, diagnosis/context, mutation highlight genes, and slide count.
-- `CohortManifest` may grow an explicit reference to the cohort-index artifact while staying otherwise routing-oriented.
+- The explicit routing-manifest link is currently represented as `CohortManifest.cohortIndexPath` while keeping `CohortManifest` otherwise routing-oriented.
+- The cohort-index entries currently carry `caseId`, `href`, `caseManifestPath`, `primaryDiagnosis`, `diseaseType`, `tumorSampleId`, `mutationHighlightGenes`, and `slideCount`.
 
 ### Alternatives Considered
 - Explicitly linked cohort-index artifact from `CohortManifest` — self-describing and stable for builders/renderers. Chosen.
@@ -54,6 +55,7 @@ Add a new cohort-index contract and export/build path that contains the bounded 
 - 2026-04-23T17:35:29Z — Iteration framed around introducing a dedicated cohort-index artifact for Phase 2 cohort browsing.
 - 2026-04-23T18:02:34Z — User confirmed the existing iteration framing was current and that only stale execution files should be refreshed.
 - 2026-04-23T18:02:34Z — User confirmed the cohort-index artifact should be explicitly linked from the routing manifest.
+- 2026-04-23T18:03:56Z — Stubber modeled the explicit link as `CohortManifest.cohortIndexPath` and introduced a `cohort-index/v1` contract plus validator.
 
 ### Look Back
 - 

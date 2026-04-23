@@ -930,7 +930,70 @@ export function deriveCohortIndexManifest(
   cohortManifest: CohortManifest,
   caseManifests: CaseManifest[],
 ): CohortIndexManifest {
-  throw new Error("not implemented: deriveCohortIndexManifest");
+  const recipeCaseIds = new Set(recipe.cases.map(({ caseId }) => caseId));
+  const manifestsByCaseId = new Map<CaseId, CaseManifest>();
+
+  for (const caseManifest of caseManifests) {
+    const caseId = caseManifest.case.caseId;
+
+    if (!recipeCaseIds.has(caseId)) {
+      throw new Error(`Unexpected case manifest for non-recipe case ${caseId}`);
+    }
+
+    if (manifestsByCaseId.has(caseId)) {
+      throw new Error(`Duplicate case manifest for case ${caseId}`);
+    }
+
+    if (caseManifest.case.projectId !== recipe.projectId) {
+      throw new Error(`Case manifest ${caseId} does not match recipe.projectId`);
+    }
+
+    manifestsByCaseId.set(caseId, caseManifest);
+  }
+
+  if (cohortManifest.caseManifestPaths.length !== recipe.cases.length) {
+    throw new Error(
+      "CohortManifest.caseManifestPaths must line up one-to-one with recipe.cases",
+    );
+  }
+
+  return {
+    schemaVersion: "cohort-index/v1",
+    cohortId: recipe.cohortId,
+    projectId: recipe.projectId,
+    title: recipe.title,
+    description: recipe.description,
+    cases: recipe.cases.map(({ caseId }, index) => {
+      const caseManifest = manifestsByCaseId.get(caseId);
+
+      if (!caseManifest) {
+        throw new Error(`Missing case manifest for recipe case ${caseId}`);
+      }
+
+      const caseManifestPath = cohortManifest.caseManifestPaths[index];
+      const expectedCaseManifestPath =
+        `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
+
+      if (caseManifestPath !== expectedCaseManifestPath) {
+        throw new Error(
+          `Cohort manifest path ${caseManifestPath} does not line up with recipe case ${caseId}`,
+        );
+      }
+
+      return {
+        caseId: caseManifest.case.caseId,
+        href: `cases/${caseManifest.case.caseId.toLowerCase()}/index.html`,
+        caseManifestPath,
+        primaryDiagnosis: caseManifest.case.primaryDiagnosis,
+        diseaseType: caseManifest.case.diseaseType,
+        tumorSampleId: caseManifest.case.tumorSampleId,
+        mutationHighlightGenes: caseManifest.genomicSnapshot.mutationHighlights.map(
+          (highlight) => highlight.geneSymbol,
+        ),
+        slideCount: caseManifest.slides.length,
+      };
+    }),
+  };
 }
 
 export function deriveCohortManifest(
