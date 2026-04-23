@@ -1,8 +1,8 @@
 # Status
 
 phase: 2
-layer: 2
-updated: 2026-04-23T19:31:27.679Z
+layer: 1
+updated: 2026-04-23T19:43:09.075Z
 
 ## Wishes
 
@@ -12,7 +12,7 @@ updated: 2026-04-23T19:31:27.679Z
 | loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 366.9s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 416.1s |
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 653.0s |
-| writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
+| writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 662.8s |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
 | buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pending | - |
 | expectCheckedInManifestExport | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pending | - |
@@ -35,3 +35,6 @@ updated: 2026-04-23T19:31:27.679Z
 - 15:31:26 assertLoadedCasesMatchCohort: pass (653.0s, $0.5168)
 - 15:31:27 implementer_post verification for assertLoadedCasesMatchCohort: pass
 - 15:31:27 layer 2 verification: pass
+- 15:32:05 writeManifestJsonFiles: running
+- 15:43:08 writeManifestJsonFiles: pass (662.8s, $0.5996)
+- 15:43:09 implementer_post verification for writeManifestJsonFiles: pass

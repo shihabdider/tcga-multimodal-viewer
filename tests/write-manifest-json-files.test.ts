@@ -14,6 +14,7 @@ import type { CohortManifest } from "../src/contracts/cohort-manifest";
 const repoRoot = join(import.meta.dir, "..");
 const checkedInManifestDirectory = join(repoRoot, "manifests", "tcga-brca");
 const cohortOutputPath = "tcga-brca.tiny-cohort-manifest.json";
+const cohortIndexOutputPath = (cohortManifest as CohortManifest).cohortIndexPath;
 
 async function withTempDirectory(
   run: (directory: string) => Promise<void>,
@@ -37,6 +38,10 @@ describe("writeManifestJsonFiles", () => {
       {
         outputPath: cohortOutputPath,
         content: await readCheckedInManifest(cohortOutputPath),
+      },
+      {
+        outputPath: cohortIndexOutputPath,
+        content: await readCheckedInManifest(cohortIndexOutputPath),
       },
       ...(
         await Promise.all(
@@ -89,6 +94,7 @@ describe("writeManifestJsonFiles", () => {
       expect((await readdir(outputDirectory)).sort()).toEqual([
         "tcga-3c-aalk.case-manifest.json",
         "tcga-4h-aaak.case-manifest.json",
+        "tcga-brca.tiny-cohort-index.json",
         "tcga-brca.tiny-cohort-manifest.json",
         "tcga-e9-a5fl.case-manifest.json",
       ]);

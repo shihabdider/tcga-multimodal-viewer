@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import {
   checkedTinyBrcaCaseManifests,
+  checkedTinyBrcaCohortIndexOutputPath,
   checkedTinyBrcaCohortManifest,
   checkedTinyBrcaCohortManifestOutputPath,
   checkedTinyBrcaRecipePath,
@@ -45,6 +46,7 @@ export async function coverTinyBrcaExportToStaticViewerThinSlice(): Promise<void
     expect(exportResult.caseManifests).toEqual(checkedTinyBrcaCaseManifests);
     expect(exportResult.files.map((file) => file.outputPath)).toEqual([
       checkedTinyBrcaCohortManifestOutputPath,
+      checkedTinyBrcaCohortIndexOutputPath,
       ...checkedTinyBrcaCohortManifest.caseManifestPaths,
     ]);
 

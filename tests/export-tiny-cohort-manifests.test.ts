@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import {
   checkedTinyBrcaCaseManifests,
+  checkedTinyBrcaCohortIndexOutputPath,
   checkedTinyBrcaCohortManifest,
   checkedTinyBrcaCohortManifestOutputPath,
   checkedTinyBrcaRecipe,
@@ -40,6 +41,12 @@ describe("exportTinyCohortManifests", () => {
         outputPath: checkedTinyBrcaCohortManifestOutputPath,
         content: await readCheckedTinyBrcaManifest(
           checkedTinyBrcaCohortManifestOutputPath,
+        ),
+      },
+      {
+        outputPath: checkedTinyBrcaCohortIndexOutputPath,
+        content: await readCheckedTinyBrcaManifest(
+          checkedTinyBrcaCohortIndexOutputPath,
         ),
       },
       ...(
@@ -129,6 +136,9 @@ describe("exportTinyCohortManifests", () => {
       expect(requestedUrls).toEqual([]);
       await expect(
         readFile(join(outputDirectory, checkedTinyBrcaCohortManifestOutputPath), "utf8"),
+      ).rejects.toThrow();
+      await expect(
+        readFile(join(outputDirectory, checkedTinyBrcaCohortIndexOutputPath), "utf8"),
       ).rejects.toThrow();
     });
   });

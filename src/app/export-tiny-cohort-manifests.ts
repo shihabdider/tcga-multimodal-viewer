@@ -1189,12 +1189,8 @@ export async function writeManifestJsonFiles(
     caseManifestsByOutputPath.set(outputPath, caseManifest);
   }
 
-  const files: ManifestJsonFile[] = [
-    {
-      outputPath: cohortOutputPath,
-      content: serializeNormalizedManifestJson(cohortManifest),
-    },
-    ...cohortManifest.caseManifestPaths.map((outputPath) => {
+  const orderedCaseManifestFiles = cohortManifest.caseManifestPaths.map(
+    (outputPath) => {
       const caseManifest = caseManifestsByOutputPath.get(outputPath);
 
       if (!caseManifest) {
@@ -1203,9 +1199,44 @@ export async function writeManifestJsonFiles(
 
       return {
         outputPath,
-        content: serializeNormalizedManifestJson(caseManifest),
+        manifest: caseManifest,
       };
-    }),
+    },
+  );
+
+  const cohortIndexManifest: CohortIndexManifest = {
+    schemaVersion: "cohort-index/v1",
+    cohortId: cohortManifest.cohortId,
+    projectId: cohortManifest.projectId,
+    title: cohortManifest.title,
+    description: cohortManifest.description,
+    cases: orderedCaseManifestFiles.map(({ outputPath, manifest }) => ({
+      caseId: manifest.case.caseId,
+      href: `cases/${manifest.case.caseId.toLowerCase()}/index.html`,
+      caseManifestPath: outputPath,
+      primaryDiagnosis: manifest.case.primaryDiagnosis,
+      diseaseType: manifest.case.diseaseType,
+      tumorSampleId: manifest.case.tumorSampleId,
+      mutationHighlightGenes: manifest.genomicSnapshot.mutationHighlights.map(
+        (highlight) => highlight.geneSymbol,
+      ),
+      slideCount: manifest.slides.length,
+    })),
+  };
+
+  const files: ManifestJsonFile[] = [
+    {
+      outputPath: cohortOutputPath,
+      content: serializeNormalizedManifestJson(cohortManifest),
+    },
+    {
+      outputPath: cohortManifest.cohortIndexPath,
+      content: serializeNormalizedManifestJson(cohortIndexManifest),
+    },
+    ...orderedCaseManifestFiles.map(({ outputPath, manifest }) => ({
+      outputPath,
+      content: serializeNormalizedManifestJson(manifest),
+    })),
   ];
 
   await mkdir(outputDirectory, { recursive: true });

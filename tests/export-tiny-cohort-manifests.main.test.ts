@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import {
+  checkedTinyBrcaCohortIndexOutputPath,
   checkedTinyBrcaCohortManifest,
   checkedTinyBrcaCohortManifestOutputPath,
   checkedTinyBrcaRecipePath,
@@ -31,6 +32,7 @@ async function expectCheckedInManifestExport(
 ): Promise<void> {
   const expectedOutputPaths = [
     checkedTinyBrcaCohortManifestOutputPath,
+    checkedTinyBrcaCohortIndexOutputPath,
     ...checkedTinyBrcaCohortManifest.caseManifestPaths,
   ];
 
