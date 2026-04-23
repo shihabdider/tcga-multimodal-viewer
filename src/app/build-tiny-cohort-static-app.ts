@@ -109,6 +109,69 @@ function assertLoadedCasesMatchCohort(
   });
 }
 
+function assertCohortIndexMatchesLoadedCases(
+  cohortManifest: CohortManifest,
+  cohortIndexManifest: CohortIndexManifest,
+  loadedCases: LoadedCohortCase[],
+): void {
+  if (cohortIndexManifest.cohortId !== cohortManifest.cohortId) {
+    throw new Error("CohortIndexManifest.cohortId must match CohortManifest.cohortId");
+  }
+
+  if (cohortIndexManifest.projectId !== cohortManifest.projectId) {
+    throw new Error(
+      "CohortIndexManifest.projectId must match CohortManifest.projectId",
+    );
+  }
+
+  if (cohortIndexManifest.title !== cohortManifest.title) {
+    throw new Error("CohortIndexManifest.title must match CohortManifest.title");
+  }
+
+  if (cohortIndexManifest.description !== cohortManifest.description) {
+    throw new Error(
+      "CohortIndexManifest.description must match CohortManifest.description",
+    );
+  }
+
+  if (cohortIndexManifest.cases.length !== loadedCases.length) {
+    throw new Error(
+      "CohortIndexManifest.cases must resolve one-to-one with loaded case manifests",
+    );
+  }
+
+  cohortIndexManifest.cases.forEach((entry, index) => {
+    const loadedCase = loadedCases[index];
+    const caseManifestPath = cohortManifest.caseManifestPaths[index];
+
+    if (!loadedCase || caseManifestPath === undefined) {
+      throw new Error(
+        `CohortIndexManifest.cases[${index}] does not line up with loaded case manifests`,
+      );
+    }
+
+    const caseId = loadedCase.manifest.case.caseId;
+
+    if (entry.caseId !== caseId) {
+      throw new Error(
+        `CohortIndexManifest.cases[${index}].caseId does not line up with loaded case ${caseId}`,
+      );
+    }
+
+    if (entry.caseManifestPath !== caseManifestPath) {
+      throw new Error(
+        `CohortIndexManifest.cases[${index}].caseManifestPath does not line up with loaded case ${caseId}`,
+      );
+    }
+
+    if (entry.href !== buildIndexHref(caseId)) {
+      throw new Error(
+        `CohortIndexManifest.cases[${index}].href does not line up with loaded case ${caseId}`,
+      );
+    }
+  });
+}
+
 async function loadCohortCases(
   cohortManifestPath: string,
   cohortManifest: CohortManifest,
@@ -132,28 +195,26 @@ export async function buildTinyCohortStaticApp(
 ): Promise<TinyCohortStaticBuild> {
   const cohortManifest = await loadCohortManifestFromFile(paths.manifestPath);
   const loadedCases = await loadCohortCases(paths.manifestPath, cohortManifest);
+  const cohortIndexManifestPath = join(
+    dirname(paths.manifestPath),
+    cohortManifest.cohortIndexPath,
+  );
+  const cohortIndexManifest = await loadCohortIndexManifestFromFile(
+    cohortIndexManifestPath,
+  );
 
   assertLoadedCasesMatchCohort(cohortManifest, loadedCases);
+  assertCohortIndexMatchesLoadedCases(
+    cohortManifest,
+    cohortIndexManifest,
+    loadedCases,
+  );
 
   const assets: StaticAsset[] = [
     {
       outputPath: "index.html",
       contentType: "text/html",
-      content: renderCohortIndexPage({
-        title: cohortManifest.title,
-        description: cohortManifest.description,
-        cases: loadedCases.map(({ manifest }) => ({
-          caseId: manifest.case.caseId,
-          href: buildIndexHref(manifest.case.caseId),
-          primaryDiagnosis: manifest.case.primaryDiagnosis,
-          diseaseType: manifest.case.diseaseType,
-          tumorSampleId: manifest.case.tumorSampleId,
-          mutationHighlightGenes: manifest.genomicSnapshot.mutationHighlights.map(
-            (highlight) => highlight.geneSymbol,
-          ),
-          slideCount: manifest.slides.length,
-        })),
-      }),
+      content: renderCohortIndexPage(cohortIndexManifest),
     },
     {
       outputPath: "styles.css",

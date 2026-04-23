@@ -69,3 +69,4 @@
 {"ts":"2026-04-23T19:31:27.679Z","agent":"implementer","wish":"assertLoadedCasesMatchCohort","layer":2,"status":"pass","turns":26,"input":45368,"output":12490,"cacheRead":864000,"cost":0.5168,"duration":653}
 {"ts":"2026-04-23T19:43:09.075Z","agent":"implementer","wish":"writeManifestJsonFiles","layer":1,"status":"pass","turns":22,"input":69696,"output":12864,"cacheRead":929408,"cost":0.5996,"duration":662.8}
 {"ts":"2026-04-23T19:57:05.808Z","agent":"implementer","wish":"exportTinyCohortManifests","layer":1,"status":"pass","turns":22,"input":52641,"output":15634,"cacheRead":791936,"cost":0.5641,"duration":810.9}
+{"ts":"2026-04-23T20:09:50.473Z","agent":"implementer","wish":"buildTinyCohortStaticApp","layer":1,"status":"pass","turns":25,"input":55170,"output":14425,"cacheRead":786432,"cost":0.5509,"duration":745.6}

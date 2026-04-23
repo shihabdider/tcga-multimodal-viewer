@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 1
-updated: 2026-04-23T19:57:05.808Z
+updated: 2026-04-23T20:09:50.473Z
 
 ## Wishes
 
@@ -14,7 +14,7 @@ updated: 2026-04-23T19:57:05.808Z
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 653.0s |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 662.8s |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 810.9s |
-| buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pending | - |
+| buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pass | 745.6s |
 | expectCheckedInManifestExport | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pending | - |
 | coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pending | - |
 
@@ -41,3 +41,7 @@ updated: 2026-04-23T19:57:05.808Z
 - 15:43:34 exportTinyCohortManifests: running
 - 15:57:05 exportTinyCohortManifests: pass (810.9s, $0.5641)
 - 15:57:05 implementer_post verification for exportTinyCohortManifests: pass
+- 15:57:23 buildTinyCohortStaticApp: running
+- 16:09:49 buildTinyCohortStaticApp: pass (745.6s, $0.5509)
+- 16:09:50 implementer_post verification for buildTinyCohortStaticApp: pass
+- 16:09:50 layer 1 verification: pass
