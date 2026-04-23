@@ -70,3 +70,4 @@
 {"ts":"2026-04-23T19:43:09.075Z","agent":"implementer","wish":"writeManifestJsonFiles","layer":1,"status":"pass","turns":22,"input":69696,"output":12864,"cacheRead":929408,"cost":0.5996,"duration":662.8}
 {"ts":"2026-04-23T19:57:05.808Z","agent":"implementer","wish":"exportTinyCohortManifests","layer":1,"status":"pass","turns":22,"input":52641,"output":15634,"cacheRead":791936,"cost":0.5641,"duration":810.9}
 {"ts":"2026-04-23T20:09:50.473Z","agent":"implementer","wish":"buildTinyCohortStaticApp","layer":1,"status":"pass","turns":25,"input":55170,"output":14425,"cacheRead":786432,"cost":0.5509,"duration":745.6}
+{"ts":"2026-04-23T20:19:07.120Z","agent":"implementer","wish":"expectCheckedInManifestExport","layer":0,"status":"pass","turns":27,"input":65184,"output":10085,"cacheRead":891136,"cost":0.537,"duration":536}

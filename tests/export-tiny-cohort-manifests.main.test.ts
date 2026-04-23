@@ -3,7 +3,6 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import {
-  checkedTinyBrcaCohortIndexOutputPath,
   checkedTinyBrcaCohortManifest,
   checkedTinyBrcaCohortManifestOutputPath,
   checkedTinyBrcaRecipePath,
@@ -32,7 +31,7 @@ async function expectCheckedInManifestExport(
 ): Promise<void> {
   const expectedOutputPaths = [
     checkedTinyBrcaCohortManifestOutputPath,
-    checkedTinyBrcaCohortIndexOutputPath,
+    checkedTinyBrcaCohortManifest.cohortIndexPath,
     ...checkedTinyBrcaCohortManifest.caseManifestPaths,
   ];
 
@@ -45,6 +44,69 @@ async function expectCheckedInManifestExport(
 
 afterEach(() => {
   restoreCheckedTinyBrcaFetchMock();
+});
+
+describe("expectCheckedInManifestExport", () => {
+  test("accepts the checked-in routing manifest, linked cohort index, and case manifests", async () => {
+    await withTempProjectRoot(
+      "export-tiny-cohort-manifests-main-",
+      async (projectRoot) => {
+        const outputDirectory = join(
+          projectRoot,
+          "custom-dist",
+          "tcga-brca-manifest-export",
+        );
+        const expectedOutputPaths = [
+          checkedTinyBrcaCohortManifestOutputPath,
+          checkedTinyBrcaCohortManifest.cohortIndexPath,
+          ...checkedTinyBrcaCohortManifest.caseManifestPaths,
+        ];
+
+        await mkdir(outputDirectory, { recursive: true });
+
+        for (const outputPath of expectedOutputPaths) {
+          await writeFile(
+            join(outputDirectory, outputPath),
+            await readCheckedTinyBrcaManifest(outputPath),
+            "utf8",
+          );
+        }
+
+        await expectCheckedInManifestExport(outputDirectory);
+      },
+    );
+  });
+
+  test("rejects when the linked cohort-index file is missing", async () => {
+    await withTempProjectRoot(
+      "export-tiny-cohort-manifests-main-",
+      async (projectRoot) => {
+        const outputDirectory = join(
+          projectRoot,
+          "custom-dist",
+          "tcga-brca-manifest-export",
+        );
+        const outputPathsWithoutCohortIndex = [
+          checkedTinyBrcaCohortManifestOutputPath,
+          ...checkedTinyBrcaCohortManifest.caseManifestPaths,
+        ];
+
+        await mkdir(outputDirectory, { recursive: true });
+
+        for (const outputPath of outputPathsWithoutCohortIndex) {
+          await writeFile(
+            join(outputDirectory, outputPath),
+            await readCheckedTinyBrcaManifest(outputPath),
+            "utf8",
+          );
+        }
+
+        await expect(
+          expectCheckedInManifestExport(outputDirectory),
+        ).rejects.toThrow(/ENOENT|No such file/i);
+      },
+    );
+  });
 });
 
 export async function coverExportTinyCohortManifestsMain(
