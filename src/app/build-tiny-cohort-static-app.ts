@@ -76,6 +76,12 @@ function assertLoadedCasesMatchCohort(
   cohortManifest: CohortManifest,
   loadedCases: LoadedCohortCase[],
 ): void {
+  if (loadedCases.length !== cohortManifest.caseManifestPaths.length) {
+    throw new Error(
+      "CohortManifest.caseManifestPaths must resolve one-to-one with loaded case manifests",
+    );
+  }
+
   const caseIds = loadedCases.map(({ manifest }) => manifest.case.caseId);
 
   if (new Set(caseIds).size !== caseIds.length) {
@@ -84,13 +90,23 @@ function assertLoadedCasesMatchCohort(
     );
   }
 
-  for (const { manifestPath, manifest } of loadedCases) {
+  loadedCases.forEach(({ manifestPath, manifest }, index) => {
+    const expectedManifestPath =
+      `${manifest.case.caseId.toLowerCase()}.case-manifest.json`;
+    const caseManifestPath = cohortManifest.caseManifestPaths[index];
+
+    if (caseManifestPath !== expectedManifestPath) {
+      throw new Error(
+        `CohortManifest.caseManifestPaths[${index}] does not line up with loaded case ${manifest.case.caseId}`,
+      );
+    }
+
     if (manifest.case.projectId !== cohortManifest.projectId) {
       throw new Error(
         `Case manifest ${manifestPath} does not match CohortManifest.projectId`,
       );
     }
-  }
+  });
 }
 
 async function loadCohortCases(

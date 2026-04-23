@@ -66,3 +66,4 @@
 {"ts":"2026-04-23T19:06:47.962Z","agent":"implementer","wish":"deriveCohortIndexManifest","layer":2,"status":"pass","turns":23,"input":50693,"output":12138,"cacheRead":843520,"cost":0.5197,"duration":632.5}
 {"ts":"2026-04-23T19:13:08.440Z","agent":"implementer","wish":"loadCohortIndexManifestFromFile","layer":2,"status":"pass","turns":22,"input":40168,"output":6647,"cacheRead":615552,"cost":0.354,"duration":366.9}
 {"ts":"2026-04-23T19:20:18.101Z","agent":"implementer","wish":"serializeNormalizedManifestJson","layer":2,"status":"pass","turns":14,"input":38451,"output":7984,"cacheRead":343424,"cost":0.3017,"duration":416.1}
+{"ts":"2026-04-23T19:31:27.679Z","agent":"implementer","wish":"assertLoadedCasesMatchCohort","layer":2,"status":"pass","turns":26,"input":45368,"output":12490,"cacheRead":864000,"cost":0.5168,"duration":653}

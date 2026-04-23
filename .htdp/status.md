@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-23T19:20:18.100Z
+updated: 2026-04-23T19:31:27.679Z
 
 ## Wishes
 
@@ -11,7 +11,7 @@ updated: 2026-04-23T19:20:18.100Z
 | deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 632.5s |
 | loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 366.9s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 416.1s |
-| assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
+| assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 653.0s |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
 | buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pending | - |
@@ -31,3 +31,7 @@ updated: 2026-04-23T19:20:18.100Z
 - 15:13:21 serializeNormalizedManifestJson: running
 - 15:20:17 serializeNormalizedManifestJson: pass (416.1s, $0.3017)
 - 15:20:18 implementer_post verification for serializeNormalizedManifestJson: pass
+- 15:20:33 assertLoadedCasesMatchCohort: running
+- 15:31:26 assertLoadedCasesMatchCohort: pass (653.0s, $0.5168)
+- 15:31:27 implementer_post verification for assertLoadedCasesMatchCohort: pass
+- 15:31:27 layer 2 verification: pass
