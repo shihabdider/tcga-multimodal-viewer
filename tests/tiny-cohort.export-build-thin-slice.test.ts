@@ -5,16 +5,19 @@ import { join } from "node:path";
 
 import {
   checkedTinyBrcaCaseManifests,
+  checkedTinyBrcaCohortIndex,
   checkedTinyBrcaCohortIndexOutputPath,
   checkedTinyBrcaCohortManifest,
   checkedTinyBrcaCohortManifestOutputPath,
   checkedTinyBrcaRecipePath,
   expectCheckedTinyBrcaGdcRequestCounts,
   installCheckedTinyBrcaFetchMock,
+  readCheckedTinyBrcaManifest,
   restoreCheckedTinyBrcaFetchMock,
 } from "./helpers/checked-tiny-brca-fixture";
 import { buildTinyCohortStaticApp } from "../src/app/build-tiny-cohort-static-app";
 import { exportTinyCohortManifests } from "../src/app/export-tiny-cohort-manifests";
+import { renderCohortIndexPage } from "../src/rendering/case-page";
 
 async function withTempDirectories(
   run: (paths: { exportDirectory: string; buildDirectory: string }) => Promise<void>,
@@ -50,6 +53,28 @@ export async function coverTinyBrcaExportToStaticViewerThinSlice(): Promise<void
       ...checkedTinyBrcaCohortManifest.caseManifestPaths,
     ]);
 
+    const expectedCohortIndexJson = await readCheckedTinyBrcaManifest(
+      checkedTinyBrcaCohortIndexOutputPath,
+    );
+    const exportedCohortIndexFile = exportResult.files.find(
+      (file) => file.outputPath === exportResult.cohortManifest.cohortIndexPath,
+    );
+    const exportedCohortIndexPath = join(
+      exportDirectory,
+      exportResult.cohortManifest.cohortIndexPath,
+    );
+    const exportedCohortIndexJson = await readFile(exportedCohortIndexPath, "utf8");
+    const exportedCohortIndex = JSON.parse(
+      exportedCohortIndexJson,
+    ) as typeof checkedTinyBrcaCohortIndex;
+
+    expect(exportedCohortIndexFile).toEqual({
+      outputPath: exportResult.cohortManifest.cohortIndexPath,
+      content: expectedCohortIndexJson,
+    });
+    expect(exportedCohortIndexJson).toBe(expectedCohortIndexJson);
+    expect(exportedCohortIndex).toEqual(checkedTinyBrcaCohortIndex);
+
     const build = await buildTinyCohortStaticApp({
       manifestPath: join(exportDirectory, checkedTinyBrcaCohortManifestOutputPath),
       outputDirectory: buildDirectory,
@@ -67,21 +92,15 @@ export async function coverTinyBrcaExportToStaticViewerThinSlice(): Promise<void
       ),
     ]);
 
+    const expectedRenderedIndex = renderCohortIndexPage(exportedCohortIndex);
     const renderedIndex = await readFile(join(buildDirectory, "index.html"), "utf8");
 
-    expect(renderedIndex).toContain(checkedTinyBrcaCohortManifest.title);
-    expect(renderedIndex).toContain(checkedTinyBrcaCohortManifest.description);
-
-    for (const manifest of checkedTinyBrcaCaseManifests) {
-      expect(renderedIndex).toContain(manifest.case.caseId);
-      expect(renderedIndex).toContain(manifest.case.primaryDiagnosis);
-      expect(renderedIndex).toContain(
-        `cases/${manifest.case.caseId.toLowerCase()}/index.html`,
-      );
-      expect(renderedIndex).toContain(
-        manifest.genomicSnapshot.mutationHighlights[0].geneSymbol,
-      );
-    }
+    expect(build.assets.find((asset) => asset.outputPath === "index.html")).toEqual({
+      outputPath: "index.html",
+      contentType: "text/html",
+      content: expectedRenderedIndex,
+    });
+    expect(renderedIndex).toBe(expectedRenderedIndex);
 
     for (const manifest of checkedTinyBrcaCaseManifests) {
       const caseSlug = manifest.case.caseId.toLowerCase();

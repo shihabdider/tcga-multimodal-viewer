@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 0
-updated: 2026-04-23T20:19:07.120Z
+updated: 2026-04-23T20:27:28.410Z
 
 ## Wishes
 
@@ -16,7 +16,7 @@ updated: 2026-04-23T20:19:07.120Z
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 810.9s |
 | buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pass | 745.6s |
 | expectCheckedInManifestExport | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pass | 536.0s |
-| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pending | - |
+| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pass | 489.3s |
 
 ## Log
 
@@ -48,3 +48,7 @@ updated: 2026-04-23T20:19:07.120Z
 - 16:10:10 expectCheckedInManifestExport: running
 - 16:19:06 expectCheckedInManifestExport: pass (536.0s, $0.5370)
 - 16:19:07 implementer_post verification for expectCheckedInManifestExport: pass
+- 16:19:18 coverTinyBrcaExportToStaticViewerThinSlice: running
+- 16:27:27 coverTinyBrcaExportToStaticViewerThinSlice: pass (489.3s, $0.4414)
+- 16:27:27 implementer_post verification for coverTinyBrcaExportToStaticViewerThinSlice: pass
+- 16:27:28 layer 0 verification: pass
