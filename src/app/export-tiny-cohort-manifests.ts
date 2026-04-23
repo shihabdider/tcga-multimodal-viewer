@@ -1126,7 +1126,27 @@ export function serializeNormalizedManifestJson(
   }
 
   if ("cases" in manifest) {
-    throw new Error("not implemented: serializeNormalizedManifestJson<CohortIndexManifest>");
+    return `${JSON.stringify(
+      {
+        schemaVersion: manifest.schemaVersion,
+        cohortId: manifest.cohortId,
+        projectId: manifest.projectId,
+        title: manifest.title,
+        description: manifest.description,
+        cases: manifest.cases.map((entry) => ({
+          caseId: entry.caseId,
+          href: entry.href,
+          caseManifestPath: entry.caseManifestPath,
+          primaryDiagnosis: entry.primaryDiagnosis,
+          diseaseType: entry.diseaseType,
+          tumorSampleId: entry.tumorSampleId,
+          mutationHighlightGenes: [...entry.mutationHighlightGenes],
+          slideCount: entry.slideCount,
+        })),
+      },
+      null,
+      2,
+    )}\n`;
   }
 
   return `${JSON.stringify(

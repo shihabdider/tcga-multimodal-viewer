@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-23T19:13:08.440Z
+updated: 2026-04-23T19:20:18.100Z
 
 ## Wishes
 
@@ -10,7 +10,7 @@ updated: 2026-04-23T19:13:08.440Z
 |------|------|-------|--------|------|
 | deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 632.5s |
 | loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 366.9s |
-| serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 416.1s |
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
 | exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
@@ -28,3 +28,6 @@ updated: 2026-04-23T19:13:08.440Z
 - 15:07:01 loadCohortIndexManifestFromFile: running
 - 15:13:07 loadCohortIndexManifestFromFile: pass (366.9s, $0.3540)
 - 15:13:08 implementer_post verification for loadCohortIndexManifestFromFile: pass
+- 15:13:21 serializeNormalizedManifestJson: running
+- 15:20:17 serializeNormalizedManifestJson: pass (416.1s, $0.3017)
+- 15:20:18 implementer_post verification for serializeNormalizedManifestJson: pass

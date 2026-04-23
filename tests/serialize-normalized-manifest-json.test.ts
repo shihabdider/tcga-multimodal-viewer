@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import checkedInCaseManifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
+import checkedInCohortIndexManifest from "../manifests/tcga-brca/tcga-brca.tiny-cohort-index.json";
 import checkedInCohortManifest from "../manifests/tcga-brca/tcga-brca.tiny-cohort-manifest.json";
 import { serializeNormalizedManifestJson } from "../src/app/export-tiny-cohort-manifests";
 import type {
@@ -14,6 +15,7 @@ import type {
   SlideReference,
   SourceFileReference,
 } from "../src/contracts/case-manifest";
+import type { CohortIndexManifest } from "../src/contracts/cohort-index";
 import type { CohortManifest } from "../src/contracts/cohort-manifest";
 
 const repoRoot = join(import.meta.dir, "..");
@@ -28,6 +30,12 @@ const checkedInCohortManifestPath = join(
   "manifests",
   "tcga-brca",
   "tcga-brca.tiny-cohort-manifest.json",
+);
+const checkedInCohortIndexManifestPath = join(
+  repoRoot,
+  "manifests",
+  "tcga-brca",
+  "tcga-brca.tiny-cohort-index.json",
 );
 
 function reverseSourceFileReferenceOrder(
@@ -152,6 +160,28 @@ function buildUnstableCohortManifest(
   };
 }
 
+function buildUnstableCohortIndexManifest(
+  manifest: CohortIndexManifest,
+): CohortIndexManifest {
+  return {
+    cases: manifest.cases.map((entry) => ({
+      slideCount: entry.slideCount,
+      mutationHighlightGenes: [...entry.mutationHighlightGenes],
+      tumorSampleId: entry.tumorSampleId,
+      diseaseType: entry.diseaseType,
+      primaryDiagnosis: entry.primaryDiagnosis,
+      caseManifestPath: entry.caseManifestPath,
+      href: entry.href,
+      caseId: entry.caseId,
+    })),
+    description: manifest.description,
+    title: manifest.title,
+    projectId: manifest.projectId,
+    cohortId: manifest.cohortId,
+    schemaVersion: manifest.schemaVersion,
+  };
+}
+
 describe("serializeNormalizedManifestJson", () => {
   test("matches the checked-in case manifest source text", async () => {
     const expected = await readFile(checkedInCaseManifestPath, "utf8");
@@ -187,5 +217,46 @@ describe("serializeNormalizedManifestJson", () => {
     );
 
     expect(serializeNormalizedManifestJson(unstableManifest)).toBe(expected);
+  });
+
+  test("matches the checked-in cohort index manifest source text", async () => {
+    const expected = await readFile(checkedInCohortIndexManifestPath, "utf8");
+
+    expect(
+      serializeNormalizedManifestJson(
+        checkedInCohortIndexManifest as CohortIndexManifest,
+      ),
+    ).toBe(expected);
+  });
+
+  test("normalizes cohort index manifest key ordering while preserving checked-in nested array order", async () => {
+    const expected = await readFile(checkedInCohortIndexManifestPath, "utf8");
+    const unstableManifest = buildUnstableCohortIndexManifest(
+      checkedInCohortIndexManifest as CohortIndexManifest,
+    );
+    const serialized = serializeNormalizedManifestJson(unstableManifest);
+
+    expect(serialized).toBe(expected);
+    expect(serialized.endsWith("\n")).toBe(true);
+  });
+
+  test("serializes cohort index manifests with an empty cases array", () => {
+    expect(
+      serializeNormalizedManifestJson({
+        schemaVersion: "cohort-index/v1",
+        cohortId: "empty-cohort",
+        projectId: "TCGA-BRCA",
+        title: "Empty cohort",
+        description: "No cases yet.",
+        cases: [],
+      }),
+    ).toBe(`{
+  "schemaVersion": "cohort-index/v1",
+  "cohortId": "empty-cohort",
+  "projectId": "TCGA-BRCA",
+  "title": "Empty cohort",
+  "description": "No cases yet.",
+  "cases": []
+}\n`);
   });
 });

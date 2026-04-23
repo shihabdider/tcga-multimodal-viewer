@@ -65,3 +65,4 @@
 {"ts":"2026-04-23T18:45:24.856Z","agent":"stubber","wish":null,"layer":null,"status":"pass","turns":45,"input":110054,"output":49047,"cacheRead":3511808,"cost":1.8888,"duration":2471.3}
 {"ts":"2026-04-23T19:06:47.962Z","agent":"implementer","wish":"deriveCohortIndexManifest","layer":2,"status":"pass","turns":23,"input":50693,"output":12138,"cacheRead":843520,"cost":0.5197,"duration":632.5}
 {"ts":"2026-04-23T19:13:08.440Z","agent":"implementer","wish":"loadCohortIndexManifestFromFile","layer":2,"status":"pass","turns":22,"input":40168,"output":6647,"cacheRead":615552,"cost":0.354,"duration":366.9}
+{"ts":"2026-04-23T19:20:18.101Z","agent":"implementer","wish":"serializeNormalizedManifestJson","layer":2,"status":"pass","turns":14,"input":38451,"output":7984,"cacheRead":343424,"cost":0.3017,"duration":416.1}
