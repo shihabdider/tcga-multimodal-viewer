@@ -15,7 +15,11 @@ import {
   readCheckedTinyBrcaManifest,
   restoreCheckedTinyBrcaFetchMock,
 } from "./helpers/checked-tiny-brca-fixture";
-import { exportTinyCohortManifests } from "../src/app/export-tiny-cohort-manifests";
+import {
+  deriveCohortIndexManifest,
+  exportTinyCohortManifests,
+  serializeNormalizedManifestJson,
+} from "../src/app/export-tiny-cohort-manifests";
 
 async function withTempDirectory(
   run: (directory: string) => Promise<void>,
@@ -92,6 +96,38 @@ describe("exportTinyCohortManifests", () => {
     });
 
     expectCheckedTinyBrcaGdcRequestCounts(requestedUrls);
+  });
+
+  test("surfaces the linked cohort-index file through files without changing the returned case manifests", async () => {
+    installCheckedTinyBrcaFetchMock();
+
+    await withTempDirectory(async (tempRoot) => {
+      const outputDirectory = join(tempRoot, "dist", "tcga-brca-manifest-export");
+      const result = await exportTinyCohortManifests({
+        recipePath: checkedTinyBrcaRecipePath,
+        outputDirectory,
+      });
+      const expectedCohortIndexContent = serializeNormalizedManifestJson(
+        deriveCohortIndexManifest(
+          checkedTinyBrcaRecipe,
+          result.cohortManifest,
+          result.caseManifests,
+        ),
+      );
+
+      expect(result.caseManifests).toEqual(checkedTinyBrcaCaseManifests);
+      expect(
+        result.files.find(
+          (file) => file.outputPath === result.cohortManifest.cohortIndexPath,
+        ),
+      ).toEqual({
+        outputPath: result.cohortManifest.cohortIndexPath,
+        content: expectedCohortIndexContent,
+      });
+      expect(
+        await readFile(join(outputDirectory, result.cohortManifest.cohortIndexPath), "utf8"),
+      ).toBe(expectedCohortIndexContent);
+    });
   });
 
   test("rejects invalid recipes before fetching public data or writing manifest files", async () => {

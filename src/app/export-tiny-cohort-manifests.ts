@@ -1262,11 +1262,46 @@ export async function exportTinyCohortManifests(
     ),
   );
   const cohortManifest = deriveCohortManifest(recipe, caseManifests);
-  const files = await writeManifestJsonFiles(
+  const cohortIndexManifest = deriveCohortIndexManifest(
+    recipe,
+    cohortManifest,
+    caseManifests,
+  );
+  const cohortIndexFile: ManifestJsonFile = {
+    outputPath: cohortManifest.cohortIndexPath,
+    content: serializeNormalizedManifestJson(cohortIndexManifest),
+  };
+  const writtenFiles = await writeManifestJsonFiles(
     paths.outputDirectory,
     cohortManifest,
     caseManifests,
   );
+  const writtenCohortIndexFile = writtenFiles.find(
+    (file) => file.outputPath === cohortIndexFile.outputPath,
+  );
+  const files = writtenCohortIndexFile
+    ? writtenFiles.map((file) =>
+        file.outputPath === cohortIndexFile.outputPath ? cohortIndexFile : file,
+      )
+    : [
+        ...writtenFiles.slice(0, 1),
+        cohortIndexFile,
+        ...writtenFiles.slice(1),
+      ];
+
+  if (
+    !writtenCohortIndexFile ||
+    writtenCohortIndexFile.content !== cohortIndexFile.content
+  ) {
+    const { writeFile } = await import("node:fs/promises");
+    const { join } = await import("node:path");
+
+    await writeFile(
+      join(paths.outputDirectory, cohortIndexFile.outputPath),
+      cohortIndexFile.content,
+      "utf8",
+    );
+  }
 
   return {
     outputDirectory: paths.outputDirectory,

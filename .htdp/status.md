@@ -2,7 +2,7 @@
 
 phase: 2
 layer: 1
-updated: 2026-04-23T19:43:09.075Z
+updated: 2026-04-23T19:57:05.808Z
 
 ## Wishes
 
@@ -13,7 +13,7 @@ updated: 2026-04-23T19:43:09.075Z
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 416.1s |
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 653.0s |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 662.8s |
-| exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
+| exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pass | 810.9s |
 | buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pending | - |
 | expectCheckedInManifestExport | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pending | - |
 | coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pending | - |
@@ -38,3 +38,6 @@ updated: 2026-04-23T19:43:09.075Z
 - 15:32:05 writeManifestJsonFiles: running
 - 15:43:08 writeManifestJsonFiles: pass (662.8s, $0.5996)
 - 15:43:09 implementer_post verification for writeManifestJsonFiles: pass
+- 15:43:34 exportTinyCohortManifests: running
+- 15:57:05 exportTinyCohortManifests: pass (810.9s, $0.5641)
+- 15:57:05 implementer_post verification for exportTinyCohortManifests: pass
