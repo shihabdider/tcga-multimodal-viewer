@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import type { CaseId, CaseManifest } from "../contracts/case-manifest";
@@ -11,6 +10,7 @@ import {
   type StaticAsset,
   writeStaticAssets,
 } from "./build-single-case-static-app";
+import { loadValidatedJsonFile } from "./load-validated-json-file";
 import {
   renderCasePage,
   renderCohortIndexPage,
@@ -41,19 +41,13 @@ interface LoadedCohortCase {
 export async function loadCohortManifestFromFile(
   manifestPath: string,
 ): Promise<CohortManifest> {
-  const manifestJson = await readFile(manifestPath, "utf8");
-  const parsedManifest = JSON.parse(manifestJson) as unknown;
-
-  return validateCohortManifest(parsedManifest);
+  return loadValidatedJsonFile(manifestPath, validateCohortManifest);
 }
 
 export async function loadCohortIndexManifestFromFile(
   manifestPath: string,
 ): Promise<CohortIndexManifest> {
-  const manifestJson = await readFile(manifestPath, "utf8");
-  const parsedManifest = JSON.parse(manifestJson) as unknown;
-
-  return validateCohortIndexManifest(parsedManifest);
+  return loadValidatedJsonFile(manifestPath, validateCohortIndexManifest);
 }
 
 function buildCaseSlug(caseId: CaseId): string {

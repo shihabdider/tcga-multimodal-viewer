@@ -1,8 +1,9 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import type { CaseId, CaseManifest } from "../contracts/case-manifest";
 import { validateCaseManifest } from "../contracts/case-manifest.validation";
+import { loadValidatedJsonFile } from "./load-validated-json-file";
 import {
   renderCasePage,
   renderSingleCaseStylesheet,
@@ -32,10 +33,7 @@ export interface SingleCaseStaticBuild {
 export async function loadCaseManifestFromFile(
   manifestPath: string,
 ): Promise<CaseManifest> {
-  const manifestJson = await readFile(manifestPath, "utf8");
-  const parsedManifest = JSON.parse(manifestJson) as unknown;
-
-  return validateCaseManifest(parsedManifest);
+  return loadValidatedJsonFile(manifestPath, validateCaseManifest);
 }
 
 export async function writeStaticAssets(

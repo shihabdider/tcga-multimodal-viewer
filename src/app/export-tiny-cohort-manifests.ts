@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { loadValidatedJsonFile } from "./load-validated-json-file";
 
 import type {
   CaseId,
@@ -39,10 +39,160 @@ export interface TinyCohortExportPaths {
 export async function loadTinyCohortExportRecipeFromFile(
   recipePath: string,
 ): Promise<TinyCohortExportRecipe> {
-  const recipeJson = await readFile(recipePath, "utf8");
-  const parsedRecipe = JSON.parse(recipeJson) as unknown;
+  return loadValidatedJsonFile(recipePath, validateTinyCohortExportRecipe);
+}
 
-  return validateTinyCohortExportRecipe(parsedRecipe);
+interface OrderedCaseManifestFile {
+  outputPath: string;
+  manifest: CaseManifest;
+}
+
+function buildCaseManifestOutputPath(caseId: CaseId): string {
+  return `${caseId.toLowerCase()}.case-manifest.json`;
+}
+
+function buildCohortIndexEntry(
+  outputPath: string,
+  caseManifest: CaseManifest,
+): CohortIndexManifest["cases"][number] {
+  return {
+    caseId: caseManifest.case.caseId,
+    href: `cases/${caseManifest.case.caseId.toLowerCase()}/index.html`,
+    caseManifestPath: outputPath,
+    primaryDiagnosis: caseManifest.case.primaryDiagnosis,
+    diseaseType: caseManifest.case.diseaseType,
+    tumorSampleId: caseManifest.case.tumorSampleId,
+    mutationHighlightGenes: caseManifest.genomicSnapshot.mutationHighlights.map(
+      (highlight) => highlight.geneSymbol,
+    ),
+    slideCount: caseManifest.slides.length,
+  };
+}
+
+function buildCohortIndexManifestFromOrderedCaseManifests(
+  cohort: Pick<
+    CohortManifest,
+    "cohortId" | "projectId" | "title" | "description"
+  >,
+  orderedCaseManifestFiles: OrderedCaseManifestFile[],
+): CohortIndexManifest {
+  return {
+    schemaVersion: "cohort-index/v1",
+    cohortId: cohort.cohortId,
+    projectId: cohort.projectId,
+    title: cohort.title,
+    description: cohort.description,
+    cases: orderedCaseManifestFiles.map(({ outputPath, manifest }) =>
+      buildCohortIndexEntry(outputPath, manifest),
+    ),
+  };
+}
+
+function indexRecipeCaseManifests(
+  recipe: TinyCohortExportRecipe,
+  caseManifests: CaseManifest[],
+): Map<CaseId, CaseManifest> {
+  const recipeCaseIds = new Set(recipe.cases.map(({ caseId }) => caseId));
+  const manifestsByCaseId = new Map<CaseId, CaseManifest>();
+
+  for (const caseManifest of caseManifests) {
+    const caseId = caseManifest.case.caseId;
+
+    if (!recipeCaseIds.has(caseId)) {
+      throw new Error(`Unexpected case manifest for non-recipe case ${caseId}`);
+    }
+
+    if (manifestsByCaseId.has(caseId)) {
+      throw new Error(`Duplicate case manifest for case ${caseId}`);
+    }
+
+    if (caseManifest.case.projectId !== recipe.projectId) {
+      throw new Error(`Case manifest ${caseId} does not match recipe.projectId`);
+    }
+
+    manifestsByCaseId.set(caseId, caseManifest);
+  }
+
+  return manifestsByCaseId;
+}
+
+function requireRecipeCaseManifest(
+  manifestsByCaseId: Map<CaseId, CaseManifest>,
+  caseId: CaseId,
+): CaseManifest {
+  const caseManifest = manifestsByCaseId.get(caseId);
+
+  if (!caseManifest) {
+    throw new Error(`Missing case manifest for recipe case ${caseId}`);
+  }
+
+  return caseManifest;
+}
+
+function orderRecipeCaseManifestFiles(
+  recipe: TinyCohortExportRecipe,
+  cohortManifest: CohortManifest,
+  manifestsByCaseId: Map<CaseId, CaseManifest>,
+): OrderedCaseManifestFile[] {
+  if (cohortManifest.caseManifestPaths.length !== recipe.cases.length) {
+    throw new Error(
+      "CohortManifest.caseManifestPaths must line up one-to-one with recipe.cases",
+    );
+  }
+
+  return recipe.cases.map(({ caseId }, index) => {
+    const caseManifest = requireRecipeCaseManifest(manifestsByCaseId, caseId);
+    const caseManifestPath = cohortManifest.caseManifestPaths[index];
+    const expectedCaseManifestPath = buildCaseManifestOutputPath(
+      caseManifest.case.caseId,
+    );
+
+    if (caseManifestPath !== expectedCaseManifestPath) {
+      throw new Error(
+        `Cohort manifest path ${caseManifestPath} does not line up with recipe case ${caseId}`,
+      );
+    }
+
+    return {
+      outputPath: caseManifestPath,
+      manifest: caseManifest,
+    };
+  });
+}
+
+function orderCaseManifestFilesByOutputPath(
+  expectedCaseManifestPaths: string[],
+  caseManifests: CaseManifest[],
+): OrderedCaseManifestFile[] {
+  const expectedPaths = new Set(expectedCaseManifestPaths);
+  const caseManifestsByOutputPath = new Map<string, CaseManifest>();
+
+  for (const caseManifest of caseManifests) {
+    const outputPath = buildCaseManifestOutputPath(caseManifest.case.caseId);
+
+    if (!expectedPaths.has(outputPath)) {
+      throw new Error(`Unexpected case manifest for cohort path ${outputPath}`);
+    }
+
+    if (caseManifestsByOutputPath.has(outputPath)) {
+      throw new Error(`Duplicate case manifest for cohort path ${outputPath}`);
+    }
+
+    caseManifestsByOutputPath.set(outputPath, caseManifest);
+  }
+
+  return expectedCaseManifestPaths.map((outputPath) => {
+    const caseManifest = caseManifestsByOutputPath.get(outputPath);
+
+    if (!caseManifest) {
+      throw new Error(`Missing case manifest for cohort path ${outputPath}`);
+    }
+
+    return {
+      outputPath,
+      manifest: caseManifest,
+    };
+  });
 }
 
 export async function fetchPublicCaseMetadata(
@@ -930,96 +1080,24 @@ export function deriveCohortIndexManifest(
   cohortManifest: CohortManifest,
   caseManifests: CaseManifest[],
 ): CohortIndexManifest {
-  const recipeCaseIds = new Set(recipe.cases.map(({ caseId }) => caseId));
-  const manifestsByCaseId = new Map<CaseId, CaseManifest>();
+  const manifestsByCaseId = indexRecipeCaseManifests(recipe, caseManifests);
+  const orderedCaseManifestFiles = orderRecipeCaseManifestFiles(
+    recipe,
+    cohortManifest,
+    manifestsByCaseId,
+  );
 
-  for (const caseManifest of caseManifests) {
-    const caseId = caseManifest.case.caseId;
-
-    if (!recipeCaseIds.has(caseId)) {
-      throw new Error(`Unexpected case manifest for non-recipe case ${caseId}`);
-    }
-
-    if (manifestsByCaseId.has(caseId)) {
-      throw new Error(`Duplicate case manifest for case ${caseId}`);
-    }
-
-    if (caseManifest.case.projectId !== recipe.projectId) {
-      throw new Error(`Case manifest ${caseId} does not match recipe.projectId`);
-    }
-
-    manifestsByCaseId.set(caseId, caseManifest);
-  }
-
-  if (cohortManifest.caseManifestPaths.length !== recipe.cases.length) {
-    throw new Error(
-      "CohortManifest.caseManifestPaths must line up one-to-one with recipe.cases",
-    );
-  }
-
-  return {
-    schemaVersion: "cohort-index/v1",
-    cohortId: recipe.cohortId,
-    projectId: recipe.projectId,
-    title: recipe.title,
-    description: recipe.description,
-    cases: recipe.cases.map(({ caseId }, index) => {
-      const caseManifest = manifestsByCaseId.get(caseId);
-
-      if (!caseManifest) {
-        throw new Error(`Missing case manifest for recipe case ${caseId}`);
-      }
-
-      const caseManifestPath = cohortManifest.caseManifestPaths[index];
-      const expectedCaseManifestPath =
-        `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
-
-      if (caseManifestPath !== expectedCaseManifestPath) {
-        throw new Error(
-          `Cohort manifest path ${caseManifestPath} does not line up with recipe case ${caseId}`,
-        );
-      }
-
-      return {
-        caseId: caseManifest.case.caseId,
-        href: `cases/${caseManifest.case.caseId.toLowerCase()}/index.html`,
-        caseManifestPath,
-        primaryDiagnosis: caseManifest.case.primaryDiagnosis,
-        diseaseType: caseManifest.case.diseaseType,
-        tumorSampleId: caseManifest.case.tumorSampleId,
-        mutationHighlightGenes: caseManifest.genomicSnapshot.mutationHighlights.map(
-          (highlight) => highlight.geneSymbol,
-        ),
-        slideCount: caseManifest.slides.length,
-      };
-    }),
-  };
+  return buildCohortIndexManifestFromOrderedCaseManifests(
+    recipe,
+    orderedCaseManifestFiles,
+  );
 }
 
 export function deriveCohortManifest(
   recipe: TinyCohortExportRecipe,
   caseManifests: CaseManifest[],
 ): CohortManifest {
-  const recipeCaseIds = new Set(recipe.cases.map(({ caseId }) => caseId));
-  const manifestsByCaseId = new Map<CaseId, CaseManifest>();
-
-  for (const caseManifest of caseManifests) {
-    const caseId = caseManifest.case.caseId;
-
-    if (!recipeCaseIds.has(caseId)) {
-      throw new Error(`Unexpected case manifest for non-recipe case ${caseId}`);
-    }
-
-    if (manifestsByCaseId.has(caseId)) {
-      throw new Error(`Duplicate case manifest for case ${caseId}`);
-    }
-
-    if (caseManifest.case.projectId !== recipe.projectId) {
-      throw new Error(`Case manifest ${caseId} does not match recipe.projectId`);
-    }
-
-    manifestsByCaseId.set(caseId, caseManifest);
-  }
+  const manifestsByCaseId = indexRecipeCaseManifests(recipe, caseManifests);
 
   return {
     schemaVersion: "cohort-manifest/v1",
@@ -1028,15 +1106,11 @@ export function deriveCohortManifest(
     title: recipe.title,
     description: recipe.description,
     cohortIndexPath: DEFAULT_COHORT_INDEX_OUTPUT_PATH,
-    caseManifestPaths: recipe.cases.map(({ caseId }) => {
-      const caseManifest = manifestsByCaseId.get(caseId);
-
-      if (!caseManifest) {
-        throw new Error(`Missing case manifest for recipe case ${caseId}`);
-      }
-
-      return `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
-    }),
+    caseManifestPaths: recipe.cases.map(({ caseId }) =>
+      buildCaseManifestOutputPath(
+        requireRecipeCaseManifest(manifestsByCaseId, caseId).case.caseId,
+      ),
+    ),
   };
 }
 
@@ -1168,61 +1242,21 @@ export async function writeManifestJsonFiles(
   outputDirectory: string,
   cohortManifest: CohortManifest,
   caseManifests: CaseManifest[],
+  cohortIndexManifest?: CohortIndexManifest,
 ): Promise<ManifestJsonFile[]> {
   const { mkdir, writeFile } = await import("node:fs/promises");
   const { join } = await import("node:path");
   const cohortOutputPath = "tcga-brca.tiny-cohort-manifest.json";
-  const expectedCaseManifestPaths = new Set(cohortManifest.caseManifestPaths);
-  const caseManifestsByOutputPath = new Map<string, CaseManifest>();
-
-  for (const caseManifest of caseManifests) {
-    const outputPath = `${caseManifest.case.caseId.toLowerCase()}.case-manifest.json`;
-
-    if (!expectedCaseManifestPaths.has(outputPath)) {
-      throw new Error(`Unexpected case manifest for cohort path ${outputPath}`);
-    }
-
-    if (caseManifestsByOutputPath.has(outputPath)) {
-      throw new Error(`Duplicate case manifest for cohort path ${outputPath}`);
-    }
-
-    caseManifestsByOutputPath.set(outputPath, caseManifest);
-  }
-
-  const orderedCaseManifestFiles = cohortManifest.caseManifestPaths.map(
-    (outputPath) => {
-      const caseManifest = caseManifestsByOutputPath.get(outputPath);
-
-      if (!caseManifest) {
-        throw new Error(`Missing case manifest for cohort path ${outputPath}`);
-      }
-
-      return {
-        outputPath,
-        manifest: caseManifest,
-      };
-    },
+  const orderedCaseManifestFiles = orderCaseManifestFilesByOutputPath(
+    cohortManifest.caseManifestPaths,
+    caseManifests,
   );
-
-  const cohortIndexManifest: CohortIndexManifest = {
-    schemaVersion: "cohort-index/v1",
-    cohortId: cohortManifest.cohortId,
-    projectId: cohortManifest.projectId,
-    title: cohortManifest.title,
-    description: cohortManifest.description,
-    cases: orderedCaseManifestFiles.map(({ outputPath, manifest }) => ({
-      caseId: manifest.case.caseId,
-      href: `cases/${manifest.case.caseId.toLowerCase()}/index.html`,
-      caseManifestPath: outputPath,
-      primaryDiagnosis: manifest.case.primaryDiagnosis,
-      diseaseType: manifest.case.diseaseType,
-      tumorSampleId: manifest.case.tumorSampleId,
-      mutationHighlightGenes: manifest.genomicSnapshot.mutationHighlights.map(
-        (highlight) => highlight.geneSymbol,
-      ),
-      slideCount: manifest.slides.length,
-    })),
-  };
+  const resolvedCohortIndexManifest =
+    cohortIndexManifest ??
+    buildCohortIndexManifestFromOrderedCaseManifests(
+      cohortManifest,
+      orderedCaseManifestFiles,
+    );
 
   const files: ManifestJsonFile[] = [
     {
@@ -1231,7 +1265,7 @@ export async function writeManifestJsonFiles(
     },
     {
       outputPath: cohortManifest.cohortIndexPath,
-      content: serializeNormalizedManifestJson(cohortIndexManifest),
+      content: serializeNormalizedManifestJson(resolvedCohortIndexManifest),
     },
     ...orderedCaseManifestFiles.map(({ outputPath, manifest }) => ({
       outputPath,
@@ -1267,41 +1301,12 @@ export async function exportTinyCohortManifests(
     cohortManifest,
     caseManifests,
   );
-  const cohortIndexFile: ManifestJsonFile = {
-    outputPath: cohortManifest.cohortIndexPath,
-    content: serializeNormalizedManifestJson(cohortIndexManifest),
-  };
-  const writtenFiles = await writeManifestJsonFiles(
+  const files = await writeManifestJsonFiles(
     paths.outputDirectory,
     cohortManifest,
     caseManifests,
+    cohortIndexManifest,
   );
-  const writtenCohortIndexFile = writtenFiles.find(
-    (file) => file.outputPath === cohortIndexFile.outputPath,
-  );
-  const files = writtenCohortIndexFile
-    ? writtenFiles.map((file) =>
-        file.outputPath === cohortIndexFile.outputPath ? cohortIndexFile : file,
-      )
-    : [
-        ...writtenFiles.slice(0, 1),
-        cohortIndexFile,
-        ...writtenFiles.slice(1),
-      ];
-
-  if (
-    !writtenCohortIndexFile ||
-    writtenCohortIndexFile.content !== cohortIndexFile.content
-  ) {
-    const { writeFile } = await import("node:fs/promises");
-    const { join } = await import("node:path");
-
-    await writeFile(
-      join(paths.outputDirectory, cohortIndexFile.outputPath),
-      cohortIndexFile.content,
-      "utf8",
-    );
-  }
 
   return {
     outputDirectory: paths.outputDirectory,

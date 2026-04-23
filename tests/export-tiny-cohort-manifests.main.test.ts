@@ -26,20 +26,58 @@ async function writeCheckedInRecipe(recipePath: string): Promise<void> {
   await writeFile(recipePath, await readFile(checkedTinyBrcaRecipePath, "utf8"), "utf8");
 }
 
+function listCheckedInManifestOutputPaths(
+  includeCohortIndex: boolean = true,
+): string[] {
+  return [
+    checkedTinyBrcaCohortManifestOutputPath,
+    ...(includeCohortIndex ? [checkedTinyBrcaCohortManifest.cohortIndexPath] : []),
+    ...checkedTinyBrcaCohortManifest.caseManifestPaths,
+  ];
+}
+
+async function writeCheckedInManifests(
+  outputDirectory: string,
+  outputPaths: string[],
+): Promise<void> {
+  await mkdir(outputDirectory, { recursive: true });
+
+  for (const outputPath of outputPaths) {
+    await writeFile(
+      join(outputDirectory, outputPath),
+      await readCheckedTinyBrcaManifest(outputPath),
+      "utf8",
+    );
+  }
+}
+
 async function expectCheckedInManifestExport(
   outputDirectory: string,
 ): Promise<void> {
-  const expectedOutputPaths = [
-    checkedTinyBrcaCohortManifestOutputPath,
-    checkedTinyBrcaCohortManifest.cohortIndexPath,
-    ...checkedTinyBrcaCohortManifest.caseManifestPaths,
-  ];
-
-  for (const outputPath of expectedOutputPaths) {
+  for (const outputPath of listCheckedInManifestOutputPaths()) {
     expect(await readFile(join(outputDirectory, outputPath), "utf8")).toBe(
       await readCheckedTinyBrcaManifest(outputPath),
     );
   }
+}
+
+async function withTempCheckedInManifestOutputDirectory(
+  outputPaths: string[],
+  run: (outputDirectory: string) => Promise<void>,
+): Promise<void> {
+  await withTempProjectRoot(
+    "export-tiny-cohort-manifests-main-",
+    async (projectRoot) => {
+      const outputDirectory = join(
+        projectRoot,
+        "custom-dist",
+        "tcga-brca-manifest-export",
+      );
+
+      await writeCheckedInManifests(outputDirectory, outputPaths);
+      await run(outputDirectory);
+    },
+  );
 }
 
 afterEach(() => {
@@ -48,59 +86,16 @@ afterEach(() => {
 
 describe("expectCheckedInManifestExport", () => {
   test("accepts the checked-in routing manifest, linked cohort index, and case manifests", async () => {
-    await withTempProjectRoot(
-      "export-tiny-cohort-manifests-main-",
-      async (projectRoot) => {
-        const outputDirectory = join(
-          projectRoot,
-          "custom-dist",
-          "tcga-brca-manifest-export",
-        );
-        const expectedOutputPaths = [
-          checkedTinyBrcaCohortManifestOutputPath,
-          checkedTinyBrcaCohortManifest.cohortIndexPath,
-          ...checkedTinyBrcaCohortManifest.caseManifestPaths,
-        ];
-
-        await mkdir(outputDirectory, { recursive: true });
-
-        for (const outputPath of expectedOutputPaths) {
-          await writeFile(
-            join(outputDirectory, outputPath),
-            await readCheckedTinyBrcaManifest(outputPath),
-            "utf8",
-          );
-        }
-
-        await expectCheckedInManifestExport(outputDirectory);
-      },
+    await withTempCheckedInManifestOutputDirectory(
+      listCheckedInManifestOutputPaths(),
+      expectCheckedInManifestExport,
     );
   });
 
   test("rejects when the linked cohort-index file is missing", async () => {
-    await withTempProjectRoot(
-      "export-tiny-cohort-manifests-main-",
-      async (projectRoot) => {
-        const outputDirectory = join(
-          projectRoot,
-          "custom-dist",
-          "tcga-brca-manifest-export",
-        );
-        const outputPathsWithoutCohortIndex = [
-          checkedTinyBrcaCohortManifestOutputPath,
-          ...checkedTinyBrcaCohortManifest.caseManifestPaths,
-        ];
-
-        await mkdir(outputDirectory, { recursive: true });
-
-        for (const outputPath of outputPathsWithoutCohortIndex) {
-          await writeFile(
-            join(outputDirectory, outputPath),
-            await readCheckedTinyBrcaManifest(outputPath),
-            "utf8",
-          );
-        }
-
+    await withTempCheckedInManifestOutputDirectory(
+      listCheckedInManifestOutputPaths(false),
+      async (outputDirectory) => {
         await expect(
           expectCheckedInManifestExport(outputDirectory),
         ).rejects.toThrow(/ENOENT|No such file/i);
