@@ -50,10 +50,10 @@ export async function loadCohortManifestFromFile(
 export async function loadCohortIndexManifestFromFile(
   manifestPath: string,
 ): Promise<CohortIndexManifest> {
-  void manifestPath;
-  void validateCohortIndexManifest;
+  const manifestJson = await readFile(manifestPath, "utf8");
+  const parsedManifest = JSON.parse(manifestJson) as unknown;
 
-  throw new Error("not implemented: loadCohortIndexManifestFromFile");
+  return validateCohortIndexManifest(parsedManifest);
 }
 
 function buildCaseSlug(caseId: CaseId): string {

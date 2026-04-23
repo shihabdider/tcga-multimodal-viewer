@@ -2,14 +2,14 @@
 
 phase: 2
 layer: 2
-updated: 2026-04-23T19:06:47.962Z
+updated: 2026-04-23T19:13:08.440Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
 | deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pass | 632.5s |
-| loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
+| loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pass | 366.9s |
 | serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
 | assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
 | writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
@@ -25,3 +25,6 @@ updated: 2026-04-23T19:06:47.962Z
 - 14:56:14 deriveCohortIndexManifest: running
 - 15:06:47 deriveCohortIndexManifest: pass (632.5s, $0.5197)
 - 15:06:47 implementer_post verification for deriveCohortIndexManifest: pass
+- 15:07:01 loadCohortIndexManifestFromFile: running
+- 15:13:07 loadCohortIndexManifestFromFile: pass (366.9s, $0.3540)
+- 15:13:08 implementer_post verification for loadCohortIndexManifestFromFile: pass
