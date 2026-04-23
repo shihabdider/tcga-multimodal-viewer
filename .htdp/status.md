@@ -1,35 +1,24 @@
 # Status
 
-phase: 3
-layer: 0
-updated: 2026-04-21T18:48:29Z
+phase: 1
+layer: -
+updated: 2026-04-23T18:45:24.856Z
 
 ## Wishes
 
 | wish | file | layer | status | time |
 |------|------|-------|--------|------|
-| coverExportTinyCohortManifestsMain | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pass | 447.8s |
-| coverBuildTinyCohortStaticAppMain | tests/build-tiny-cohort-static-app.main.test.ts | 0 | pass | 328.8s |
-| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pass | 381.1s |
-| documentTinyBrcaSmokeTestLocalRunbook | README.md | 0 | pass | 268.1s |
+| deriveCohortIndexManifest | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| loadCohortIndexManifestFromFile | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
+| serializeNormalizedManifestJson | src/app/export-tiny-cohort-manifests.ts | 2 | pending | - |
+| assertLoadedCasesMatchCohort | src/app/build-tiny-cohort-static-app.ts | 2 | pending | - |
+| writeManifestJsonFiles | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
+| exportTinyCohortManifests | src/app/export-tiny-cohort-manifests.ts | 1 | pending | - |
+| buildTinyCohortStaticApp | src/app/build-tiny-cohort-static-app.ts | 1 | pending | - |
+| expectCheckedInManifestExport | tests/export-tiny-cohort-manifests.main.test.ts | 0 | pending | - |
+| coverTinyBrcaExportToStaticViewerThinSlice | tests/tiny-cohort.export-build-thin-slice.test.ts | 0 | pending | - |
 
 ## Log
 
-- 14:25:11 stubber complete, 4 wishes, 1 layers
-- 14:25:11 stubber_post verification: pass
-- 14:25:44 coverExportTinyCohortManifestsMain: running
-- 14:25:44 coverBuildTinyCohortStaticAppMain: running
-- 14:25:44 coverTinyBrcaExportToStaticViewerThinSlice: running
-- 14:25:44 documentTinyBrcaSmokeTestLocalRunbook: running
-- 14:30:12 documentTinyBrcaSmokeTestLocalRunbook: pass (268.1s, $0.3988)
-- 14:30:12 implementer_post verification for documentTinyBrcaSmokeTestLocalRunbook: pass
-- 14:31:12 coverBuildTinyCohortStaticAppMain: pass (328.8s, $0.4922)
-- 14:31:13 implementer_post verification for coverBuildTinyCohortStaticAppMain: fail
-- 14:32:05 coverTinyBrcaExportToStaticViewerThinSlice: pass (381.1s, $0.8056)
-- 14:32:05 implementer_post verification for coverTinyBrcaExportToStaticViewerThinSlice: fail
-- 14:33:11 coverExportTinyCohortManifestsMain: pass (447.8s, $0.6983)
-- 14:33:12 implementer_post verification for coverExportTinyCohortManifestsMain: pass
-- 14:34:01 manual repo-wide bun test after parallel implementer convergence: pass
-- 14:47:01 abstractor pass
-- 14:47:02 abstractor_post verification: pass
-- 14:48:20 final_preverify verification: pass
+- 14:45:24 stubber complete, 9 wishes, 3 layers
+- 14:45:24 stubber_post verification: pass

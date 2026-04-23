@@ -9,6 +9,7 @@ import {
 } from "./helpers/temp-project-root";
 import tcga3cAalkManifestJson from "../manifests/tcga-brca/tcga-3c-aalk.case-manifest.json";
 import tcga4hAaakManifestJson from "../manifests/tcga-brca/tcga-4h-aaak.case-manifest.json";
+import cohortIndexManifestJson from "../manifests/tcga-brca/tcga-brca.tiny-cohort-index.json";
 import cohortManifestJson from "../manifests/tcga-brca/tcga-brca.tiny-cohort-manifest.json";
 import tcgaE9A5flManifestJson from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
 import {
@@ -17,6 +18,7 @@ import {
   main,
 } from "../src/app/build-tiny-cohort-static-app";
 import type { CaseManifest } from "../src/contracts/case-manifest";
+import type { CohortIndexManifest } from "../src/contracts/cohort-index";
 import type { CohortManifest } from "../src/contracts/cohort-manifest";
 import {
   renderCasePage,
@@ -27,6 +29,7 @@ import {
 const BUILD_SCRIPT_PATH = fileURLToPath(
   new URL("../src/app/build-tiny-cohort-static-app.ts", import.meta.url),
 );
+const checkedCohortIndexManifest = cohortIndexManifestJson as CohortIndexManifest;
 const checkedCohortManifest = cohortManifestJson as CohortManifest;
 const [
   tcgaE9A5flManifestPath,
@@ -65,21 +68,7 @@ function buildCaseSlug(caseId: string): string {
 }
 
 function renderExpectedCohortIndexPage(): string {
-  return renderCohortIndexPage({
-    title: checkedCohortManifest.title,
-    description: checkedCohortManifest.description,
-    cases: checkedCaseManifests.map((manifest) => ({
-      caseId: manifest.case.caseId,
-      href: `cases/${buildCaseSlug(manifest.case.caseId)}/index.html`,
-      primaryDiagnosis: manifest.case.primaryDiagnosis,
-      diseaseType: manifest.case.diseaseType,
-      tumorSampleId: manifest.case.tumorSampleId,
-      mutationHighlightGenes: manifest.genomicSnapshot.mutationHighlights.map(
-        (highlight) => highlight.geneSymbol,
-      ),
-      slideCount: manifest.slides.length,
-    })),
-  });
+  return renderCohortIndexPage(checkedCohortIndexManifest);
 }
 
 function renderExpectedCasePage(manifest: CaseManifest): string {
@@ -100,6 +89,11 @@ function renderExpectedCasePage(manifest: CaseManifest): string {
 async function writeCohortManifestBundle(manifestPath: string): Promise<void> {
   await mkdir(dirname(manifestPath), { recursive: true });
   await writeFile(manifestPath, JSON.stringify(checkedCohortManifest), "utf8");
+  await writeFile(
+    join(dirname(manifestPath), checkedCohortManifest.cohortIndexPath),
+    JSON.stringify(checkedCohortIndexManifest),
+    "utf8",
+  );
 
   for (const { relativePath, manifest } of checkedCaseManifestFiles) {
     const caseManifestPath = join(dirname(manifestPath), relativePath);

@@ -12,6 +12,7 @@ import type {
   SlideReference,
   SourceFileReference,
 } from "../contracts/case-manifest";
+import type { CohortIndexManifest } from "../contracts/cohort-index";
 import type { CohortManifest } from "../contracts/cohort-manifest";
 import type {
   IdcSlimViewerHandoffSeed,
@@ -27,6 +28,8 @@ export const DEFAULT_TINY_COHORT_EXPORT_RECIPE_PATH =
   "manifests/tcga-brca/tcga-brca.tiny-export-recipe.json";
 export const DEFAULT_TINY_COHORT_EXPORT_OUTPUT_DIRECTORY =
   "dist/tcga-brca-manifest-export";
+export const DEFAULT_COHORT_INDEX_OUTPUT_PATH =
+  "tcga-brca.tiny-cohort-index.json";
 
 export interface TinyCohortExportPaths {
   recipePath: string;
@@ -922,6 +925,14 @@ export async function deriveCaseManifest(
   });
 }
 
+export function deriveCohortIndexManifest(
+  recipe: TinyCohortExportRecipe,
+  cohortManifest: CohortManifest,
+  caseManifests: CaseManifest[],
+): CohortIndexManifest {
+  throw new Error("not implemented: deriveCohortIndexManifest");
+}
+
 export function deriveCohortManifest(
   recipe: TinyCohortExportRecipe,
   caseManifests: CaseManifest[],
@@ -953,6 +964,7 @@ export function deriveCohortManifest(
     projectId: recipe.projectId,
     title: recipe.title,
     description: recipe.description,
+    cohortIndexPath: DEFAULT_COHORT_INDEX_OUTPUT_PATH,
     caseManifestPaths: recipe.cases.map(({ caseId }) => {
       const caseManifest = manifestsByCaseId.get(caseId);
 
@@ -966,7 +978,7 @@ export function deriveCohortManifest(
 }
 
 export function serializeNormalizedManifestJson(
-  manifest: CaseManifest | CohortManifest,
+  manifest: CaseManifest | CohortManifest | CohortIndexManifest,
 ): string {
   const normalizeSourceFileReference = (
     reference: SourceFileReference,
@@ -1050,6 +1062,10 @@ export function serializeNormalizedManifestJson(
     )}\n`;
   }
 
+  if ("cases" in manifest) {
+    throw new Error("not implemented: serializeNormalizedManifestJson<CohortIndexManifest>");
+  }
+
   return `${JSON.stringify(
     {
       schemaVersion: manifest.schemaVersion,
@@ -1057,6 +1073,7 @@ export function serializeNormalizedManifestJson(
       projectId: manifest.projectId,
       title: manifest.title,
       description: manifest.description,
+      cohortIndexPath: manifest.cohortIndexPath,
       caseManifestPaths: [...manifest.caseManifestPaths],
     },
     null,

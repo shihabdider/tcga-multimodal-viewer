@@ -4,5 +4,6 @@ export interface CohortManifest {
   projectId: "TCGA-BRCA";
   title: string;
   description: string;
+  cohortIndexPath: string;
   caseManifestPaths: string[];
 }

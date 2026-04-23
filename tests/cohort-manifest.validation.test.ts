@@ -17,6 +17,15 @@ describe("validateCohortManifest", () => {
     ).toThrow(/CohortManifest\.schemaVersion must be "cohort-manifest\/v1"/);
   });
 
+  test("rejects malformed cohort index paths", () => {
+    expect(() =>
+      validateCohortManifest({
+        ...cohortManifest,
+        cohortIndexPath: "tcga-brca.tiny-cohort-index.txt",
+      }),
+    ).toThrow(/CohortManifest\.cohortIndexPath must end with cohort-index\.json/);
+  });
+
   test("rejects duplicate case manifest paths", () => {
     expect(() =>
       validateCohortManifest({

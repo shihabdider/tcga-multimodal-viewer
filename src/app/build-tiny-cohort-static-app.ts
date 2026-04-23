@@ -2,7 +2,9 @@ import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import type { CaseId, CaseManifest } from "../contracts/case-manifest";
+import type { CohortIndexManifest } from "../contracts/cohort-index";
 import type { CohortManifest } from "../contracts/cohort-manifest";
+import { validateCohortIndexManifest } from "../contracts/cohort-index.validation";
 import { validateCohortManifest } from "../contracts/cohort-manifest.validation";
 import {
   loadCaseManifestFromFile,
@@ -43,6 +45,15 @@ export async function loadCohortManifestFromFile(
   const parsedManifest = JSON.parse(manifestJson) as unknown;
 
   return validateCohortManifest(parsedManifest);
+}
+
+export async function loadCohortIndexManifestFromFile(
+  manifestPath: string,
+): Promise<CohortIndexManifest> {
+  void manifestPath;
+  void validateCohortIndexManifest;
+
+  throw new Error("not implemented: loadCohortIndexManifestFromFile");
 }
 
 function buildCaseSlug(caseId: CaseId): string {

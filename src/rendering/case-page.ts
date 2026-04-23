@@ -9,6 +9,7 @@ import type {
   PublicViewerHandoff,
   SlideReference,
 } from "../contracts/case-manifest";
+import type { CohortIndexEntry } from "../contracts/cohort-index";
 
 function escapeHtml(value: string): string {
   return value
@@ -39,16 +40,6 @@ export interface CasePageNavigation {
 export interface CasePageRenderOptions {
   stylesheetHref?: string;
   navigation?: CasePageNavigation;
-}
-
-export interface CohortIndexEntry {
-  caseId: CaseId;
-  href: string;
-  primaryDiagnosis: string;
-  diseaseType: string;
-  tumorSampleId: string;
-  mutationHighlightGenes: string[];
-  slideCount: number;
 }
 
 export interface CohortIndexPageModel {

@@ -31,6 +31,21 @@ export function validateCohortManifest(value: unknown): CohortManifest {
 
   const title = requireNonEmptyString("title");
   const description = requireNonEmptyString("description");
+  const cohortIndexPath = candidate.cohortIndexPath;
+
+  if (
+    typeof cohortIndexPath !== "string" ||
+    cohortIndexPath.trim().length === 0
+  ) {
+    throw new Error("CohortManifest.cohortIndexPath must be a non-empty string");
+  }
+
+  if (!cohortIndexPath.endsWith("cohort-index.json")) {
+    throw new Error(
+      "CohortManifest.cohortIndexPath must end with cohort-index.json",
+    );
+  }
+
   const caseManifestPaths = candidate.caseManifestPaths;
 
   if (!Array.isArray(caseManifestPaths)) {
@@ -72,6 +87,7 @@ export function validateCohortManifest(value: unknown): CohortManifest {
     projectId: "TCGA-BRCA",
     title,
     description,
+    cohortIndexPath,
     caseManifestPaths: validatedPaths,
   };
 }

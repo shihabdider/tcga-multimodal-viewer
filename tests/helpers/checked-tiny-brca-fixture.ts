@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 import tcga3cAalkManifestJson from "../../manifests/tcga-brca/tcga-3c-aalk.case-manifest.json";
 import tcga4hAaakManifestJson from "../../manifests/tcga-brca/tcga-4h-aaak.case-manifest.json";
+import cohortIndexJson from "../../manifests/tcga-brca/tcga-brca.tiny-cohort-index.json";
 import cohortManifestJson from "../../manifests/tcga-brca/tcga-brca.tiny-cohort-manifest.json";
 import recipeJson from "../../manifests/tcga-brca/tcga-brca.tiny-export-recipe.json";
 import tcgaE9A5flManifestJson from "../../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
@@ -12,6 +13,7 @@ import type {
   SlideReference,
   SourceFileReference,
 } from "../../src/contracts/case-manifest";
+import type { CohortIndexManifest } from "../../src/contracts/cohort-index";
 import type { CohortManifest } from "../../src/contracts/cohort-manifest";
 import type { TinyCohortExportRecipe } from "../../src/contracts/tiny-cohort-export";
 
@@ -31,7 +33,10 @@ export const checkedTinyBrcaRecipePath = join(
 );
 export const checkedTinyBrcaCohortManifestOutputPath =
   "tcga-brca.tiny-cohort-manifest.json";
+export const checkedTinyBrcaCohortIndexOutputPath =
+  "tcga-brca.tiny-cohort-index.json";
 export const checkedTinyBrcaRecipe = recipeJson as TinyCohortExportRecipe;
+export const checkedTinyBrcaCohortIndex = cohortIndexJson as CohortIndexManifest;
 export const checkedTinyBrcaCohortManifest = cohortManifestJson as CohortManifest;
 export const checkedTinyBrcaCaseManifests = [
   tcgaE9A5flManifestJson,

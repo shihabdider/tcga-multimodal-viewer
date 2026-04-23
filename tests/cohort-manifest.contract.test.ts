@@ -7,6 +7,7 @@ describe("checked-in CohortManifest artifact", () => {
     expect(Object.keys(cohortManifest).sort()).toEqual([
       "caseManifestPaths",
       "cohortId",
+      "cohortIndexPath",
       "description",
       "projectId",
       "schemaVersion",
@@ -15,6 +16,9 @@ describe("checked-in CohortManifest artifact", () => {
     expect(cohortManifest.schemaVersion).toBe("cohort-manifest/v1");
     expect(cohortManifest.cohortId).toBe("tcga-brca-tiny-cohort");
     expect(cohortManifest.projectId).toBe("TCGA-BRCA");
+    expect(cohortManifest.cohortIndexPath).toBe(
+      "tcga-brca.tiny-cohort-index.json",
+    );
     expect(cohortManifest.caseManifestPaths).toEqual([
       "tcga-e9-a5fl.case-manifest.json",
       "tcga-3c-aalk.case-manifest.json",

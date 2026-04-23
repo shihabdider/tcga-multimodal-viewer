@@ -143,6 +143,7 @@ function buildUnstableCohortManifest(
 ): CohortManifest {
   return {
     caseManifestPaths: [...manifest.caseManifestPaths],
+    cohortIndexPath: manifest.cohortIndexPath,
     description: manifest.description,
     title: manifest.title,
     projectId: manifest.projectId,

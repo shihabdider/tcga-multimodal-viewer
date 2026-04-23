@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import tcga3cAalkManifest from "../manifests/tcga-brca/tcga-3c-aalk.case-manifest.json";
 import tcga4hAaakManifest from "../manifests/tcga-brca/tcga-4h-aaak.case-manifest.json";
+import cohortIndexManifest from "../manifests/tcga-brca/tcga-brca.tiny-cohort-index.json";
 import tcgaE9A5flManifest from "../manifests/tcga-brca/tcga-e9-a5fl.case-manifest.json";
 import {
   renderCasePage,
@@ -16,36 +17,17 @@ const tinyCohortCases = [
 
 describe("renderCohortIndexPage", () => {
   test("renders the tiny cohort heading, description, and links for each checked-in case", () => {
-    const rendered = renderCohortIndexPage({
-      title: "TCGA-BRCA tiny cohort",
-      description:
-        "Three checked-in public TCGA-BRCA cases linking open GDC genomic snapshots to IDC slide viewer handoffs.",
-      cases: tinyCohortCases.map((manifest) => ({
-        caseId: manifest.case.caseId,
-        href: `cases/${manifest.case.caseId.toLowerCase()}/index.html`,
-        primaryDiagnosis: manifest.case.primaryDiagnosis,
-        diseaseType: manifest.case.diseaseType,
-        tumorSampleId: manifest.case.tumorSampleId,
-        mutationHighlightGenes: manifest.genomicSnapshot.mutationHighlights.map(
-          (highlight) => highlight.geneSymbol,
-        ),
-        slideCount: manifest.slides.length,
-      })),
-    });
+    const rendered = renderCohortIndexPage(cohortIndexManifest);
 
     expect(rendered).toStartWith("<!DOCTYPE html>");
-    expect(rendered).toContain("TCGA-BRCA tiny cohort");
-    expect(rendered).toContain(
-      "Three checked-in public TCGA-BRCA cases linking open GDC genomic snapshots to IDC slide viewer handoffs.",
-    );
+    expect(rendered).toContain(cohortIndexManifest.title);
+    expect(rendered).toContain(cohortIndexManifest.description);
 
-    for (const manifest of tinyCohortCases) {
-      expect(rendered).toContain(manifest.case.caseId);
-      expect(rendered).toContain(manifest.case.primaryDiagnosis);
-      expect(rendered).toContain(`cases/${manifest.case.caseId.toLowerCase()}/index.html`);
-      expect(rendered).toContain(
-        manifest.genomicSnapshot.mutationHighlights[0].geneSymbol,
-      );
+    for (const entry of cohortIndexManifest.cases) {
+      expect(rendered).toContain(entry.caseId);
+      expect(rendered).toContain(entry.primaryDiagnosis);
+      expect(rendered).toContain(entry.href);
+      expect(rendered).toContain(entry.mutationHighlightGenes[0]);
     }
   });
 });

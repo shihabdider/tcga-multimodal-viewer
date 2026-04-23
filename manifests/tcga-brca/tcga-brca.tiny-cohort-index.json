@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cohort-index/v1",
+  "cohortId": "tcga-brca-tiny-cohort",
+  "projectId": "TCGA-BRCA",
+  "title": "TCGA-BRCA tiny cohort",
+  "description": "Three checked-in public TCGA-BRCA cases linking open GDC genomic snapshots to IDC slide viewer handoffs.",
+  "cases": [
+    {
+      "caseId": "TCGA-E9-A5FL",
+      "href": "cases/tcga-e9-a5fl/index.html",
+      "caseManifestPath": "tcga-e9-a5fl.case-manifest.json",
+      "primaryDiagnosis": "Metaplastic carcinoma, NOS",
+      "diseaseType": "Complex Epithelial Neoplasms",
+      "tumorSampleId": "TCGA-E9-A5FL-01A",
+      "mutationHighlightGenes": [
+        "TP53",
+        "ARID4B",
+        "PHLDA3"
+      ],
+      "slideCount": 1
+    },
+    {
+      "caseId": "TCGA-3C-AALK",
+      "href": "cases/tcga-3c-aalk/index.html",
+      "caseManifestPath": "tcga-3c-aalk.case-manifest.json",
+      "primaryDiagnosis": "Infiltrating duct carcinoma, NOS",
+      "diseaseType": "Ductal and Lobular Neoplasms",
+      "tumorSampleId": "TCGA-3C-AALK-01A",
+      "mutationHighlightGenes": [
+        "MAP2K4",
+        "PIK3CA",
+        "PLEKHA1"
+      ],
+      "slideCount": 1
+    },
+    {
+      "caseId": "TCGA-4H-AAAK",
+      "href": "cases/tcga-4h-aaak/index.html",
+      "caseManifestPath": "tcga-4h-aaak.case-manifest.json",
+      "primaryDiagnosis": "Lobular carcinoma, NOS",
+      "diseaseType": "Ductal and Lobular Neoplasms",
+      "tumorSampleId": "TCGA-4H-AAAK-01A",
+      "mutationHighlightGenes": [
+        "CDH1",
+        "ERBB2",
+        "HERC5"
+      ],
+      "slideCount": 1
+    }
+  ]
+}
