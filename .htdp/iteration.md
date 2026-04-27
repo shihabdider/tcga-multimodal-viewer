@@ -56,6 +56,10 @@ Add a new cohort-index contract and export/build path that contains the bounded 
 - 2026-04-23T18:02:34Z — User confirmed the existing iteration framing was current and that only stale execution files should be refreshed.
 - 2026-04-23T18:02:34Z — User confirmed the cohort-index artifact should be explicitly linked from the routing manifest.
 - 2026-04-23T18:03:56Z — Stubber modeled the explicit link as `CohortManifest.cohortIndexPath` and introduced a `cohort-index/v1` contract plus validator.
+- 2026-04-23T20:27:28Z — Phase 2 completed with the cohort landing page sourced from the linked cohort-index artifact, while case pages remained sourced from case manifests.
+- 2026-04-23T20:27:28Z — Builder/export invariants were tightened so `CohortManifest`, `CohortIndexManifest`, and ordered case manifests must agree on cohort identity, title/description, case order, manifest paths, and built case hrefs.
 
 ### Look Back
-- 
+- Future cohort browsing/search work should extend `CohortIndexManifest` first; `CaseManifest` remains the case-detail contract.
+- Keep the routing manifest as the explicit discovery point for the cohort index artifact.
+- Summary-field curation can happen in the cohort index without changing case-page content, but identity/path/order fields are now treated as strict integration boundaries.
